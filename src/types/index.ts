@@ -19,5 +19,6 @@ export const SUBJECTS = [
   'Programming Fundamentals (PF)',
   'Functional English (FE)',
   'Ideology and Constitution of Pakistan (ICP)',
-  'Islamic Studies (IST)'
+  'Islamic Studies (IST)',
+  'Other'
 ] as const;

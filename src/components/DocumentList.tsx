@@ -79,7 +79,7 @@ export function DocumentList() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredDocs.map((doc) => (
             <Link href={`/documents/${doc.id}`} key={doc.id}>
-              <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:-translate-y-1">
+              <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:scale-[1.02] hover:border-primary/50 active:scale-[0.98]">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     {getIcon(doc.file_type)}

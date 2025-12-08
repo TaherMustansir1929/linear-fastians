@@ -66,7 +66,7 @@ export function UploadModal() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Upload Study Material</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className='text-xs'>
             Share your notes, signals, or past papers with the class.
           </DialogDescription>
         </DialogHeader>
@@ -104,7 +104,7 @@ export function UploadModal() {
               required
               className="cursor-pointer"
             />
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Note: <span className="font-semibold text-foreground">Markdown (.md)</span> format is preferred for best rendering experience, <br/>PDFs, LaTeX, TXT and HTML files are also supported.
             </p>
           </div>
