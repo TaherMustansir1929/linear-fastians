@@ -8,6 +8,8 @@ export interface Document {
   subject: string;
   tags: string[] | null;
   user_id: string;
+  uploader_name?: string | null;
+  uploader_avatar?: string | null;
   created_at: string;
 }
 

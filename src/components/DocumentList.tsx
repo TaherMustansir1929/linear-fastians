@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Document, SUBJECTS } from '@/types'
+import { useDocuments } from '@/hooks/useDocuments'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,20 +10,18 @@ import Link from 'next/link'
 import { FileText, FileCode, FileType as FileTypeIcon, Search, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 
-interface DocumentListProps {
-  initialDocuments: Document[]
-}
-
-export function DocumentList({ initialDocuments }: DocumentListProps) {
-  const [documents, setDocuments] = useState(initialDocuments)
+export function DocumentList() {
+  const { data: documents, isLoading } = useDocuments()
   const [search, setSearch] = useState('')
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
 
-  const filteredDocs = documents.filter(doc => {
+  if (isLoading) return <div className="text-center py-20">Loading documents...</div>
+
+  const filteredDocs = documents?.filter(doc => {
     const matchesSearch = doc.title.toLowerCase().includes(search.toLowerCase())
     const matchesSubject = selectedSubject ? doc.subject === selectedSubject : true
     return matchesSearch && matchesSubject
-  })
+  }) || []
 
   // Group subjects for filter UI
   const subjects = Array.from(SUBJECTS)
@@ -53,7 +52,7 @@ export function DocumentList({ initialDocuments }: DocumentListProps) {
         <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
           <Badge 
             variant={selectedSubject === null ? "default" : "outline"} 
-            className="cursor-pointer whitespace-nowrap"
+            className="cursor-pointer whitespace-nowrap hover:scale-105 transition-transform"
             onClick={() => setSelectedSubject(null)}
           >
             All
@@ -62,7 +61,7 @@ export function DocumentList({ initialDocuments }: DocumentListProps) {
             <Badge 
               key={sub} 
               variant={selectedSubject === sub ? "default" : "outline"} 
-              className="cursor-pointer whitespace-nowrap"
+              className="cursor-pointer whitespace-nowrap hover:scale-105 transition-transform"
               onClick={() => setSelectedSubject(sub)}
             >
               {sub.split('(')[1]?.replace(')', '') || sub} {/* Show short name if possible */}
@@ -80,7 +79,7 @@ export function DocumentList({ initialDocuments }: DocumentListProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredDocs.map((doc) => (
             <Link href={`/documents/${doc.id}`} key={doc.id}>
-              <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
+              <Card className="h-full hover:shadow-lg transition-all cursor-pointer group hover:-translate-y-1">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     {getIcon(doc.file_type)}
@@ -94,9 +93,20 @@ export function DocumentList({ initialDocuments }: DocumentListProps) {
                     {doc.title}
                   </CardTitle>
                 </CardContent>
-                <CardFooter className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {format(new Date(doc.created_at), 'MMM d, yyyy')}
+                <CardFooter className="flex-col items-start gap-2 pt-0">
+                   <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {format(new Date(doc.created_at), 'MMM d, yyyy')}
+                  </div>
+                  {doc.uploader_name && (
+                    <div className="flex items-center gap-2 w-full text-xs text-muted-foreground border-t pt-2 mt-2" 
+                         onClick={(e) => { e.preventDefault(); window.location.href = `/users/${doc.user_id}` }}>
+                      {doc.uploader_avatar && <img src={doc.uploader_avatar} className="w-4 h-4 rounded-full" />}
+                       <span className="hover:underline cursor-pointer truncate">
+                        By {doc.uploader_name}
+                       </span>
+                    </div>
+                  )}
                 </CardFooter>
               </Card>
             </Link>

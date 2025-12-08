@@ -9,15 +9,14 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SUBJECTS, FileType } from '@/types'
 import { Upload } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner' // Assuming sonner is installed as per package.json
+import { useUploadDocument } from '@/hooks/useDocuments'
 
 export function UploadModal() {
   const { user } = useUser()
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const { mutate: uploadDocument, isPending } = useUploadDocument()
   
   // Form State
   const [title, setTitle] = useState('')
@@ -35,60 +34,31 @@ export function UploadModal() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!file || !title || !subject || !user) return
 
-    setIsUploading(true)
-    try {
-      const fileExt = file.name.split('.').pop()?.toLowerCase() as string
-      let fileType: FileType = 'txt'
-      if (['pdf'].includes(fileExt)) fileType = 'pdf'
-      else if (['md', 'markdown'].includes(fileExt)) fileType = 'md'
-      else if (['html', 'htm'].includes(fileExt)) fileType = 'html'
-      else if (['tex', 'latex'].includes(fileExt)) fileType = 'latex'
-      
-      const filePath = `${user.id}/${Date.now()}_${file.name}`
-
-      // 1. Upload to Storage
-      const { error: uploadError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, file)
-
-      if (uploadError) throw uploadError
-
-      // 2. Insert into DB
-      const { error: dbError } = await supabase
-        .from('documents')
-        .insert({
-          title,
-          file_path: filePath,
-          file_type: fileType,
-          subject,
-          user_id: user.id,
-          tags: [] // Todo implement tags
-        })
-
-      if (dbError) throw dbError
-
-      toast.success('Document uploaded successfully!')
-      setOpen(false)
-      setTitle('')
-      setSubject('')
-      setFile(null)
-      router.refresh()
-    } catch (error: any) {
-      console.error('Upload failed:', error)
-      toast.error('Upload failed: ' + error.message)
-    } finally {
-      setIsUploading(false)
-    }
+    uploadDocument({
+      file,
+      title,
+      subject,
+      userId: user.id,
+      userFullName: user.fullName || user.username || 'Anonymous',
+      userAvatar: user.imageUrl
+    }, {
+      onSuccess: () => {
+        setOpen(false)
+        setTitle('')
+        setSubject('')
+        setFile(null)
+      }
+    })
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button className="gap-2 cursor-pointer">
           <Upload className="h-4 w-4" />
           Upload Document
         </Button>
@@ -114,12 +84,12 @@ export function UploadModal() {
           <div className="grid gap-2">
             <Label htmlFor="subject">Subject</Label>
             <Select onValueChange={setSubject} value={subject} required>
-              <SelectTrigger>
+              <SelectTrigger className="cursor-pointer">
                 <SelectValue placeholder="Select a subject" />
               </SelectTrigger>
               <SelectContent>
                 {SUBJECTS.map((sub) => (
-                  <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                  <SelectItem key={sub} value={sub} className="cursor-pointer">{sub}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -132,11 +102,15 @@ export function UploadModal() {
               onChange={handleFileChange} 
               accept=".pdf,.md,.markdown,.html,.htm,.txt,.tex,.latex"
               required
+              className="cursor-pointer"
             />
+            <p className="text-sm text-muted-foreground mt-1">
+              Note: <span className="font-semibold text-foreground">Markdown (.md)</span> format is preferred for best rendering experience, <br/>PDFs, LaTeX, TXT and HTML files are also supported.
+            </p>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={isUploading}>
-              {isUploading ? 'Uploading...' : 'Upload'}
+            <Button type="submit" disabled={isPending} className="cursor-pointer">
+              {isPending ? 'Uploading...' : 'Upload'}
             </Button>
           </DialogFooter>
         </form>
