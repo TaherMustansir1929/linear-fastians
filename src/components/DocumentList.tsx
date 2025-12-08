@@ -5,23 +5,33 @@ import { Document, SUBJECTS } from '@/types'
 import { useDocuments } from '@/hooks/useDocuments'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { FileText, FileCode, FileType as FileTypeIcon, Search, Calendar } from 'lucide-react'
+import { FileText, FileCode, FileType as FileTypeIcon, Search, Calendar, ArrowUp, ArrowDown } from 'lucide-react'
 import { format } from 'date-fns'
 
 export function DocumentList() {
   const { data: documents, isLoading } = useDocuments()
   const [search, setSearch] = useState('')
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   if (isLoading) return <div className="text-center py-20">Loading documents...</div>
 
-  const filteredDocs = documents?.filter(doc => {
+  // Filter first
+  const filtered = documents?.filter(doc => {
     const matchesSearch = doc.title.toLowerCase().includes(search.toLowerCase())
     const matchesSubject = selectedSubject ? doc.subject === selectedSubject : true
     return matchesSearch && matchesSubject
   }) || []
+
+  // Then sort
+  const sortedDocs = [...filtered].sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime()
+    const dateB = new Date(b.created_at).getTime()
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA
+  })
 
   // Group subjects for filter UI
   const subjects = Array.from(SUBJECTS)
@@ -40,16 +50,28 @@ export function DocumentList() {
     <div className="space-y-6">
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-        <div className="relative w-full md:w-1/3">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search documents..." 
-            className="pl-8" 
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="relative w-full md:w-1/3 flex gap-2">
+            <div className='relative flex-1'>
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+                placeholder="Search documents..." 
+                className="pl-8" 
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+            />
+            </div>
+             <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                title={`Sort by Date (${sortOrder === 'asc' ? 'Oldest' : 'Newest'})`}
+            >
+                {sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+            </Button>
         </div>
-        <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+        
+        {/* Subject Filter - Fixed Scrollbar & Padding */}
+        <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-4 pt-2 px-1 scrollbar-hide mask-fade-sides">
           <Badge 
             variant={selectedSubject === null ? "default" : "outline"} 
             className="cursor-pointer whitespace-nowrap hover:scale-105 transition-transform"
@@ -64,20 +86,20 @@ export function DocumentList() {
               className="cursor-pointer whitespace-nowrap hover:scale-105 transition-transform"
               onClick={() => setSelectedSubject(sub)}
             >
-              {sub.split('(')[1]?.replace(')', '') || sub} {/* Show short name if possible */}
+              {sub.split('(')[1]?.replace(')', '') || sub}
             </Badge>
           ))}
         </div>
       </div>
 
       {/* Grid */}
-      {filteredDocs.length === 0 ? (
+      {sortedDocs.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
           No documents found. Be the first to upload one!
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredDocs.map((doc) => (
+          {sortedDocs.map((doc) => (
             <Link href={`/documents/${doc.id}`} key={doc.id}>
               <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:scale-[1.02] hover:border-primary/50 active:scale-[0.98]">
                 <CardHeader className="pb-2">
