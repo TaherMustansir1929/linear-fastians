@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { socialLinks } from "@/constants/data";
 
 const members = [
   {
@@ -27,7 +28,7 @@ export default function TeamSection() {
               let&apos;s make it even better!
             </p>
             <Button asChild variant="outline" className="pr-2">
-              <Link href="https://discord.gg/fRQCqK89EF">
+              <Link href={socialLinks.discord}>
                 Contact Us
                 <ChevronRight className="opacity-50" />
               </Link>
@@ -49,7 +50,7 @@ export default function TeamSection() {
 
                 <div>
                   <a
-                    href={member.link}
+                    href={socialLinks.github}
                     target="_blank"
                     className="cursor-pointer hover:underline"
                   >

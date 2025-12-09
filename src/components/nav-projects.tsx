@@ -48,7 +48,7 @@ export function NavPages({
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                   <MoreHorizontal />
@@ -74,7 +74,7 @@ export function NavPages({
                   <span>Delete Project</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </SidebarMenuItem>
         ))}
         {/* <SidebarMenuItem>

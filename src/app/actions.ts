@@ -173,3 +173,40 @@ export async function voteCommentAction(
 
   revalidatePath(`/documents/${documentId}`);
 }
+
+export async function toggleBookmarkAction(documentId: string) {
+  const userId = await syncUser();
+  if (!userId) throw new Error("Unauthorized");
+
+  // Check if exists
+  const { data: existing } = await supabaseAdmin
+    .from("bookmarks")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("document_id", documentId)
+    .single();
+
+  if (existing) {
+    // Remove
+    await supabaseAdmin
+      .from("bookmarks")
+      .delete()
+      .eq("user_id", userId)
+      .eq("document_id", documentId);
+
+    // Decrement count (optional, but good for future)
+    // await supabaseAdmin.rpc('decrement_bookmark_count', { doc_id: documentId });
+  } else {
+    // Add
+    await supabaseAdmin.from("bookmarks").insert({
+      user_id: userId,
+      document_id: documentId,
+    });
+    // Increment count
+  }
+
+  revalidatePath(`/documents/${documentId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/");
+  return { isBookmarked: !existing };
+}

@@ -1,19 +1,15 @@
 "use client";
 
-import * as React from "react";
 import {
-  BookOpen,
-  Bot,
-  Command,
+  Bookmark,
   Frame,
   LifeBuoy,
-  Map,
   PieChart,
   Send,
-  Settings2,
   SquareTerminal,
   Trophy,
   Upload,
+  UsersRound,
 } from "lucide-react";
 
 import { NavDocuments } from "@/components/nav-main";
@@ -36,34 +32,21 @@ const data = {
   navDocs: [
     {
       title: "My Documents",
-      url: "/dashboard",
+      url: "/documents/me",
       icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
+      isActive: false,
+      items: [],
     },
   ],
   navSecondary: [
     {
       title: "Support",
-      url: "#",
+      url: "/coming-soon",
       icon: LifeBuoy,
     },
     {
       title: "Feedback",
-      url: "#",
+      url: "/coming-soon",
       icon: Send,
     },
   ],
@@ -79,9 +62,14 @@ const data = {
       icon: Frame,
     },
     {
+      name: "Bookmarks",
+      url: "/bookmarks",
+      icon: Bookmark,
+    },
+    {
       name: "Community",
-      url: "/community",
-      icon: Map,
+      url: "/coming-soon",
+      icon: UsersRound,
     },
     {
       name: "Leaderboard",
@@ -96,8 +84,39 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+import { Document } from "@/types";
+import Link from "next/link";
+
+export function AppSidebar({
+  userDocuments,
+  bookmarkedDocuments,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  userDocuments?: Document[];
+  bookmarkedDocuments?: Document[];
+}) {
   const { user } = useUser();
+  const documents = userDocuments || [];
+  const bookmarks = bookmarkedDocuments || [];
+
+  const navDocs = {
+    ...data.navDocs[0],
+    items: documents.map((doc) => ({
+      title: doc.title,
+      url: `/documents/${doc.id}`,
+    })),
+  };
+
+  const navBookmarks = {
+    title: "Bookmarks",
+    url: "/bookmarks",
+    icon: Bookmark,
+    isActive: false,
+    items: bookmarks.map((doc) => ({
+      title: doc.title,
+      url: `/documents/${doc.id}`,
+    })),
+  };
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -105,28 +124,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/">
                 <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg border border-border p-1">
-                  <Image
-                    src={"/icon.svg"}
-                    alt="logo"
-                    width={36}
-                    height={36}
-                    className=""
-                  />
+                  <Image src={"/icon.svg"} alt="logo" width={36} height={36} />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">Linear</span>
                   <span className="truncate text-xs">Student</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavPages projects={data.pages} />
-        <NavDocuments items={data.navDocs} />
+        <NavDocuments title="Documents" items={navDocs} />
+        {bookmarks.length > 0 && <NavDocuments items={navBookmarks} />}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

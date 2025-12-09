@@ -67,7 +67,7 @@ export function VoteButton({
   };
 
   return (
-    <div className="flex flex-row items-center gap-2 bg-muted/30 p-1.5 rounded-lg border">
+    <div className="flex flex-row items-center gap-2 bg-muted/30 p-1 rounded-lg border">
       <div className="flex items-center gap-1">
         <Button
           variant="ghost"

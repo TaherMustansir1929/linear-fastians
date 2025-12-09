@@ -5,14 +5,7 @@ import { PDFViewer } from "@/components/renderers/PDFViewer";
 import { HTMLViewer } from "@/components/renderers/HTMLViewer";
 import { TextViewer } from "@/components/renderers/TextViewer";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Download,
-  Calendar,
-  User as UserIcon,
-  Tag,
-} from "lucide-react";
+import { Download, Calendar, Tag } from "lucide-react";
 import { format } from "date-fns";
 
 interface PageProps {
@@ -21,6 +14,7 @@ interface PageProps {
 
 import { auth } from "@clerk/nextjs/server";
 import { VoteButton } from "@/components/VoteButton";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSection } from "@/components/CommentSection";
 import { ViewTracker } from "@/components/ViewTracker";
 import { Eye } from "lucide-react";
@@ -56,6 +50,19 @@ export default async function DocumentPage({ params }: PageProps) {
       .eq("user_id", userId)
       .single();
     if (vote) userVote = vote.vote_type;
+    if (vote) userVote = vote.vote_type;
+  }
+
+  // Fetch bookmark status
+  let isBookmarked = false;
+  if (userId) {
+    const { data: bookmark } = await supabase
+      .from("bookmarks")
+      .select("id")
+      .eq("document_id", id)
+      .eq("user_id", userId)
+      .single();
+    if (bookmark) isBookmarked = true;
   }
 
   const {
@@ -114,20 +121,6 @@ export default async function DocumentPage({ params }: PageProps) {
       <ViewTracker documentId={id} />
 
       <div className="mb-6">
-        <Button
-          variant="ghost"
-          asChild
-          className="mb-4 pl-0 hover:pl-0 hover:bg-transparent"
-        >
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Documents
-          </Link>
-        </Button>
-
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">
             <div className="flex justify-between items-start">
@@ -148,29 +141,38 @@ export default async function DocumentPage({ params }: PageProps) {
                   </div>
                 </div>
               </div>
-
-              {/* Vote Button placed in header */}
-              <VoteButton
-                documentId={id}
-                initialUpvotes={doc.upvote_count || 0}
-                initialDownvotes={doc.downvote_count || 0}
-                userVote={userVote}
-              />
             </div>
           </div>
 
-          <Button asChild>
-            <a
-              href={publicUrl}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download
-            </a>
-          </Button>
+          <div className="w-full md:w-fit flex flex-col sm:flex-row items-center gap-4 justify-between">
+            {/* Vote Button placed in header */}
+            <VoteButton
+              documentId={id}
+              initialUpvotes={doc.upvote_count || 0}
+              initialDownvotes={doc.downvote_count || 0}
+              userVote={userVote}
+            />
+
+            <div className="flex flex-row items-center justify-between gap-4">
+              <BookmarkButton
+                documentId={id}
+                initialIsBookmarked={!!isBookmarked}
+              />
+
+              <Button asChild>
+                <a
+                  href={publicUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 

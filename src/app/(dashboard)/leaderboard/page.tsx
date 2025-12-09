@@ -30,7 +30,7 @@ export default async function LeaderboardPage() {
           Leaderboard
         </h1>
         <p className="text-muted-foreground mt-2">
-          The most helpful in the community.
+          The most dedicated <strong>Linear</strong> contributers.
         </p>
       </div>
 

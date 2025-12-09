@@ -15,7 +15,7 @@ export default function Home() {
       <div className="relative mb-12 w-full flex flex-col items-center justify-center overflow-hidden rounded-lg bg-background md:h-120 ">
         <BackgroundRippleEffect />
         <div className="relative z-20 text-center max-w-3xl mx-auto px-4 py-16 pointer-events-none">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4 bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             <Image
               src={"/icon.svg"}
               alt="Logo"
@@ -29,10 +29,8 @@ export default function Home() {
             Obstacle-free learning.
           </p>
           <p className="text-muted-foreground text-lg leading-relaxed dark:text-neutral-400">
-            Welcome to the new standard of sharing. Upload your study notes,
-            past papers, and resources to help your classmates succeed. Browse
-            the collection freely—view everything right here, no downloads
-            required.
+            Welcome to the new standard of sharing. Browse the collection freely
+            - view everything right here, no downloads required.
           </p>
         </div>
       </div>

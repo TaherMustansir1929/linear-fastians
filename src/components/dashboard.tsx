@@ -15,14 +15,23 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
+import { Document } from "@/types";
+
 export const DashboardProvider = ({
   children,
+  userDocuments = [],
+  bookmarkedDocuments = [],
 }: {
   children: React.ReactNode;
+  userDocuments?: Document[];
+  bookmarkedDocuments?: Document[];
 }) => {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar
+        userDocuments={userDocuments}
+        bookmarkedDocuments={bookmarkedDocuments}
+      />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">

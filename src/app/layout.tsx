@@ -5,6 +5,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/sonner";
 import Providers from "@/components/Providers";
+import { DomainRestrictor } from "@/components/DomainRestrictor";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${jetbrainsMono.variable} antialiased`}>
           <Providers>
+            <DomainRestrictor />
             {children}
             <Toaster />
           </Providers>
