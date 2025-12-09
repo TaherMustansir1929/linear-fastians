@@ -94,23 +94,51 @@ export async function updateDocumentAction(
 
 import { currentUser } from "@clerk/nextjs/server";
 
-async function syncUser() {
+// Exported so it can be used in /auth-callback
+export async function syncUser() {
   const user = await currentUser();
   if (!user) return null;
 
-  const { error } = await supabaseAdmin.from("users").upsert(
-    {
-      id: user.id,
-      email: user.emailAddresses[0].emailAddress,
-      full_name: user.fullName,
-      avatar_url: user.imageUrl,
-    },
-    { onConflict: "id", ignoreDuplicates: true }
-  ); // upsert but mainly ensure exists.
-  // Actually we might want to update avatar/name if changed.
-  // For now, let's allow updating.
+  // 1. Check if user exists
+  const { data: existingUser } = await supabaseAdmin
+    .from("users")
+    .select("id")
+    .eq("id", user.id)
+    .single();
 
-  if (error) console.error("Error syncing user:", error);
+  if (existingUser) {
+    // Optional: Update basic details on every sync (like avatar)
+    await supabaseAdmin
+      .from("users")
+      .update({
+        email: user.emailAddresses[0].emailAddress,
+        full_name: user.fullName,
+        avatar_url: user.imageUrl,
+      })
+      .eq("id", user.id);
+
+    return user.id;
+  }
+
+  // 2. Create new user with defaults
+  const { error } = await supabaseAdmin.from("users").insert({
+    id: user.id,
+    email: user.emailAddresses[0].emailAddress,
+    full_name: user.fullName,
+    avatar_url: user.imageUrl,
+    reputation_score: 0,
+    total_views: 0,
+    total_upvotes: 0,
+    total_downvotes: 0,
+    role: "Student", // Default role
+  });
+
+  if (error) {
+    console.error("Error creating user:", error);
+    // Fallback: Return ID anyway to strictly allow flow to proceed?
+    // Or null? If creation fails, we might have issues.
+    // But usually it's unique constraint race condition.
+  }
   return user.id;
 }
 
