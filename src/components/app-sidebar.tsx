@@ -12,6 +12,7 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  Trophy,
   Upload,
 } from "lucide-react";
 
@@ -81,6 +82,11 @@ const data = {
       name: "Community",
       url: "/community",
       icon: Map,
+    },
+    {
+      name: "Leaderboard",
+      url: "/leaderboard",
+      icon: Trophy,
     },
     {
       name: "Upload",

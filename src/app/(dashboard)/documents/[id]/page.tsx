@@ -19,8 +19,15 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+import { auth } from "@clerk/nextjs/server";
+import { VoteButton } from "@/components/VoteButton";
+import { CommentSection } from "@/components/CommentSection";
+import { ViewTracker } from "@/components/ViewTracker";
+import { Eye } from "lucide-react";
+
 export default async function DocumentPage({ params }: PageProps) {
   const { id } = await params;
+  const { userId } = await auth();
 
   const { data: doc, error } = await supabase
     .from("documents")
@@ -30,6 +37,25 @@ export default async function DocumentPage({ params }: PageProps) {
 
   if (error || !doc) {
     notFound();
+  }
+
+  // Fetch comments
+  const { data: comments } = await supabase
+    .from("comments")
+    .select("*, user:users(*)")
+    .eq("document_id", id)
+    .order("created_at", { ascending: false });
+
+  // Fetch user vote
+  let userVote = null;
+  if (userId) {
+    const { data: vote } = await supabase
+      .from("document_votes")
+      .select("vote_type")
+      .eq("document_id", id)
+      .eq("user_id", userId)
+      .single();
+    if (vote) userVote = vote.vote_type;
   }
 
   const {
@@ -85,19 +111,51 @@ export default async function DocumentPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
+      <ViewTracker documentId={id} />
+
       <div className="mb-6">
+        <Button
+          variant="ghost"
+          asChild
+          className="mb-4 pl-0 hover:pl-0 hover:bg-transparent"
+        >
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Documents
+          </Link>
+        </Button>
+
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{doc.title}</h1>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Tag className="h-4 w-4" />
-                {doc.subject}
+          <div className="flex-1">
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">{doc.title}</h1>
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Tag className="h-4 w-4" />
+                    {doc.subject}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    {format(new Date(doc.created_at), "PPP")}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-4 w-4" />
+                    {doc.view_count || 0} views
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                {format(new Date(doc.created_at), "PPP")}
-              </div>
+
+              {/* Vote Button placed in header */}
+              <VoteButton
+                documentId={id}
+                initialUpvotes={doc.upvote_count || 0}
+                initialDownvotes={doc.downvote_count || 0}
+                userVote={userVote}
+              />
             </div>
           </div>
 
@@ -118,6 +176,11 @@ export default async function DocumentPage({ params }: PageProps) {
 
       <div className="bg-background border rounded-xl shadow-sm overflow-hidden min-h-[500px]">
         {renderContent()}
+      </div>
+
+      {/* Social Section */}
+      <div className="mt-12 border-t pt-8">
+        <CommentSection documentId={id} comments={comments || []} />
       </div>
     </div>
   );
