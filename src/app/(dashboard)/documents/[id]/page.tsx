@@ -13,6 +13,7 @@ interface PageProps {
 }
 
 import { auth } from "@clerk/nextjs/server";
+import { TimeTracker } from "@/components/TimeTracker";
 import { VoteButton } from "@/components/VoteButton";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSection } from "@/components/CommentSection";
@@ -118,6 +119,7 @@ export default async function DocumentPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-5xl">
+      <TimeTracker documentId={id} />
       <ViewTracker documentId={id} />
 
       <div className="mb-6">

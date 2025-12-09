@@ -115,8 +115,12 @@ async function syncUser() {
 }
 
 export async function incrementViewAction(documentId: string) {
+  const user = await currentUser();
+  const userId = user?.id; // Can be null if not logged in
+
   const { error } = await supabaseAdmin.rpc("increment_view", {
     doc_id: documentId,
+    viewer_id: userId || null,
   });
   if (error) console.error("Error incrementing view:", error);
 }
@@ -209,4 +213,17 @@ export async function toggleBookmarkAction(documentId: string) {
   revalidatePath("/dashboard");
   revalidatePath("/");
   return { isBookmarked: !existing };
+}
+
+export async function logTimeAction(documentId: string, seconds: number) {
+  const userId = await syncUser();
+  if (!userId) return; // Silent return for unauth (or throw?)
+
+  const { error } = await supabaseAdmin.rpc("log_time_spent", {
+    doc_id: documentId,
+    viewer_id: userId,
+    seconds: seconds,
+  });
+
+  if (error) console.error("Error logging time:", error);
 }
