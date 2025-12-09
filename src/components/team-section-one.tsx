@@ -8,8 +8,14 @@ const members = [
   {
     src: "https://avatars.githubusercontent.com/u/138671354?v=4",
     name: "Taher Mustansir",
-    role: "Fullstack Engineer",
-    link: "https://github.com/TaherMustansir1929/",
+    role: "Fullstack Developer",
+    link: socialLinks.github,
+  },
+  {
+    src: "#",
+    name: "Incoming...",
+    role: "Be a part of the team",
+    link: socialLinks.discord,
   },
 ];
 
@@ -50,7 +56,7 @@ export default function TeamSection() {
 
                 <div>
                   <a
-                    href={socialLinks.github}
+                    href={member.link}
                     target="_blank"
                     className="cursor-pointer hover:underline"
                   >
