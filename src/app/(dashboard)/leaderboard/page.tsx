@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Medal, Trophy } from "lucide-react";
+import { cn, rankingGrade } from "@/lib/utils";
 
 export const metadata = {
   title: "Linear - Leaderboard",
@@ -69,6 +70,30 @@ export default async function LeaderboardPage() {
                     </span>
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary text-secondary-foreground">
                       {user.role || "Student"}
+                    </span>
+                    <span
+                      className={cn(
+                        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-secondary-foreground",
+                        {
+                          "bg-gray-500/50":
+                            rankingGrade(user.reputation_score) === "ROOKIE",
+                          "bg-yellow-800/50":
+                            rankingGrade(user.reputation_score) === "BRONZE",
+                          "bg-cyan-500/50":
+                            rankingGrade(user.reputation_score) === "SILVER",
+                          "bg-yellow-600/50":
+                            rankingGrade(user.reputation_score) === "GOLD",
+                          "bg-indigo-500/50":
+                            rankingGrade(user.reputation_score) === "ELITE",
+                          "bg-orange-500/50":
+                            rankingGrade(user.reputation_score) === "LEGENDARY",
+                          "bg-red-500/50":
+                            rankingGrade(user.reputation_score) ===
+                            "GRAND MASTER",
+                        }
+                      )}
+                    >
+                      {rankingGrade(user.reputation_score)}
                     </span>
                   </div>
                 </TableCell>

@@ -27,6 +27,7 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DUMMY_DASHBOARD_DATA } from "@/constants/data";
+import { rankingGrade } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -153,11 +154,9 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        {showDummy && (
-          <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-mono">
-            OVERHAUL MODE
-          </span>
-        )}
+        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-mono">
+          {rankingGrade(userStats?.reputation_score || 0)}
+        </span>
       </div>
 
       {/* Metrics Cards */}
@@ -178,9 +177,7 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Reputation Score
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Credit Score</CardTitle>
             <Trophy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
