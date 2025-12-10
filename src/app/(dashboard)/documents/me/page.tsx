@@ -5,14 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { format } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Trash2, FileText, ExternalLink } from "lucide-react";
+import { Trash2, FileText } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,7 +63,7 @@ export default function Dashboard() {
                     </Link>
                     <p className="text-sm text-muted-foreground">
                       {doc.subject} • Uploaded on{" "}
-                      {format(new Date(doc.created_at), "PPP")}
+                      {format(new Date(doc.createdAt), "PPP")}
                     </p>
                   </div>
                 </div>
@@ -105,7 +98,7 @@ export default function Dashboard() {
                           onClick={() =>
                             deleteDocument({
                               id: doc.id,
-                              filePath: doc.file_path,
+                              filePath: doc.filePath,
                             })
                           }
                         >

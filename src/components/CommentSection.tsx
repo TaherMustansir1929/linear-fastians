@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { client } from "@/lib/hono";
+import { Comment } from "@/types";
+import { useUser } from "@clerk/nextjs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { postCommentAction } from "@/app/actions";
 import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
-import { Comment } from "@/types"; // Ensure Comment type is imported
 
 interface CommentSectionProps {
   documentId: string;
@@ -20,21 +22,29 @@ interface CommentSectionProps {
 export function CommentSection({ documentId, comments }: CommentSectionProps) {
   const { user, isSignedIn } = useUser();
   const [content, setContent] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await client.api.comments.$post({
+        json: { documentId, content },
+      });
+      if (!res.ok) throw new Error("Failed to post");
+      return await res.json();
+    },
+    onSuccess: () => {
+      setContent("");
+      toast.success("Comment posted!");
+      queryClient.invalidateQueries({ queryKey: ["document", documentId] });
+      window.location.reload();
+    },
+    onError: () => toast.error("Failed to post comment"),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
-
-    startTransition(async () => {
-      try {
-        await postCommentAction(documentId, content);
-        setContent("");
-        toast.success("Comment posted!");
-      } catch (e) {
-        toast.error("Failed to post comment");
-      }
-    });
+    mutation.mutate();
   };
 
   return (
@@ -54,8 +64,8 @@ export function CommentSection({ documentId, comments }: CommentSectionProps) {
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[80px]"
             />
-            <Button disabled={isPending || !content.trim()}>
-              {isPending ? "Posting..." : "Post Comment"}
+            <Button disabled={mutation.isPending || !content.trim()}>
+              {mutation.isPending ? "Posting..." : "Post Comment"}
             </Button>
           </div>
         </form>
@@ -68,35 +78,31 @@ export function CommentSection({ documentId, comments }: CommentSectionProps) {
       <div className="space-y-6">
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-4 group">
-            <Link href={`/users/${comment.user_id}`}>
+            <Link href={`/users/${comment.userId}`}>
               <Avatar className="h-10 w-10 cursor-pointer transition-opacity hover:opacity-80">
-                <AvatarImage src={comment.user?.avatar_url || ""} />
+                <AvatarImage src={comment.user?.avatarUrl || ""} />
                 <AvatarFallback>
-                  {comment.user?.full_name?.[0] || "U"}
+                  {comment.user?.fullName?.[0] || "U"}
                 </AvatarFallback>
               </Avatar>
             </Link>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <Link
-                  href={`/users/${comment.user_id}`}
+                  href={`/users/${comment.userId}`}
                   className="font-semibold text-sm hover:underline"
                 >
-                  {comment.user?.full_name || "Unknown User"}
+                  {comment.user?.fullName || "Unknown User"}
                 </Link>
                 <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(comment.created_at), {
+                  {formatDistanceToNow(new Date(comment.createdAt), {
                     addSuffix: true,
                   })}
                 </span>
               </div>
               <p className="text-sm text-foreground/90">{comment.content}</p>
 
-              <CommentVoteButtons
-                comment={comment}
-                documentId={documentId}
-                currentUserId={user?.id}
-              />
+              <CommentVoteButtons comment={comment} currentUserId={user?.id} />
             </div>
           </div>
         ))}
@@ -105,56 +111,51 @@ export function CommentSection({ documentId, comments }: CommentSectionProps) {
   );
 }
 
-import { voteCommentAction } from "@/app/actions";
-import { cn } from "@/lib/utils";
-
 function CommentVoteButtons({
   comment,
-  documentId,
   currentUserId,
 }: {
   comment: Comment;
-  documentId: string;
   currentUserId?: string;
 }) {
-  const [isPending, startTransition] = useTransition();
-  // Simple optimistic UI for now
-
-  // We don't have isOptimisticUpvoted state yet without fetching user vote.
-  // So we just show counts and allow voting.
+  const mutation = useMutation({
+    mutationFn: async (type: 1 | -1) => {
+      const res = await client.api.comments[":id"].vote.$post({
+        param: { id: comment.id },
+        json: { voteType: type },
+      });
+      if (!res.ok) throw new Error("Vote failed");
+      return await res.json();
+    },
+    onError: () => toast.error("Failed to vote"),
+  });
 
   const handleVote = (type: 1 | -1) => {
     if (!currentUserId) {
       toast.error("Please sign in to vote");
       return;
     }
-    startTransition(async () => {
-      try {
-        await voteCommentAction(comment.id, documentId, type);
-      } catch (e) {
-        toast.error("Failed to vote");
-      }
-    });
+    mutation.mutate(type);
   };
 
   return (
     <div className="flex items-center gap-3 mt-2">
       <button
         onClick={() => handleVote(1)}
-        disabled={isPending}
+        disabled={mutation.isPending}
         className="flex items-center gap-1 text-xs text-muted-foreground hover:text-emerald-600 transition-colors group/up disabled:opacity-50"
       >
         <ArrowBigUp className="h-4 w-4 group-hover/up:scale-110 transition-transform" />
-        <span>{comment.upvote_count || 0}</span>
+        <span>{comment.upvoteCount || 0}</span>
         <span className="sr-only">Upvote</span>
       </button>
       <button
         onClick={() => handleVote(-1)}
-        disabled={isPending}
+        disabled={mutation.isPending}
         className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-600 transition-colors group/down disabled:opacity-50"
       >
         <ArrowBigDown className="h-4 w-4 group-hover/down:scale-110 transition-transform" />
-        <span>{comment.downvote_count || 0}</span>
+        <span>{comment.downvoteCount || 0}</span>
         <span className="sr-only">Downvote</span>
       </button>
       <button className="text-xs text-muted-foreground hover:text-foreground transition-colors ml-2">

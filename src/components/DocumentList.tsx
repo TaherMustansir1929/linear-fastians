@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Document, SUBJECTS } from "@/types";
-import { useDocuments } from "@/hooks/useDocuments";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,19 +9,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { useDocuments } from "@/hooks/useDocuments";
+import { SUBJECTS } from "@/types";
+import { format } from "date-fns";
 import {
-  FileText,
+  ArrowDown,
+  ArrowUp,
+  Calendar,
+  Eye,
   FileCode,
+  FileText,
   FileType as FileTypeIcon,
   Search,
-  Calendar,
-  ArrowUp,
-  ArrowDown,
-  Eye,
   ThumbsUp,
 } from "lucide-react";
-import { format } from "date-fns";
+import Link from "next/link";
+import { useState } from "react";
 
 export function DocumentList() {
   const { data: documents, isLoading } = useDocuments();
@@ -54,13 +54,13 @@ export function DocumentList() {
   const sortedDocs = [...filtered].sort((a, b) => {
     let diff = 0;
     if (sortBy === "date") {
-      const dateA = new Date(a.created_at).getTime();
-      const dateB = new Date(b.created_at).getTime();
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
       diff = dateA - dateB;
     } else if (sortBy === "views") {
-      diff = (a.view_count || 0) - (b.view_count || 0);
+      diff = (a.viewCount || 0) - (b.viewCount || 0);
     } else if (sortBy === "upvotes") {
-      diff = (a.upvote_count || 0) - (b.upvote_count || 0);
+      diff = (a.upvoteCount || 0) - (b.upvoteCount || 0);
     }
 
     return sortOrder === "asc" ? diff : -diff;
@@ -169,7 +169,7 @@ export function DocumentList() {
               <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:scale-[1.02] hover:border-primary/50 active:scale-[0.98]">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    {getIcon(doc.file_type)}
+                    {getIcon(doc.fileType)}
                     <Badge variant="secondary" className="text-xs">
                       {doc.subject.split("(")[1]?.replace(")", "") || "Gen"}
                     </Badge>
@@ -184,33 +184,35 @@ export function DocumentList() {
                   <div className="text-xs text-muted-foreground flex items-center gap-3">
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {format(new Date(doc.created_at), "MMM d")}
+                      {format(new Date(doc.createdAt), "MMM d")}
                     </div>
                     <div className="flex items-center gap-1" title="Views">
                       <Eye className="h-3 w-3" />
-                      {doc.view_count || 0}
+                      {doc.viewCount || 0}
                     </div>
                     <div className="flex items-center gap-1" title="Upvotes">
                       <ThumbsUp className="h-3 w-3" />
-                      {doc.upvote_count || 0}
+                      {doc.upvoteCount || 0}
                     </div>
                   </div>
-                  {doc.uploader_name && (
+                  {doc.uploaderName && (
                     <div
                       className="flex items-center gap-2 w-full text-xs text-muted-foreground border-t pt-2 mt-2"
                       onClick={(e) => {
                         e.preventDefault();
-                        window.location.href = `/users/${doc.user_id}`;
+                        window.location.href = `/users/${doc.userId}`;
                       }}
                     >
-                      {doc.uploader_avatar && (
+                      {doc.uploaderAvatar && (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={doc.uploader_avatar}
+                          src={doc.uploaderAvatar}
+                          alt="Uploader Avatar"
                           className="w-4 h-4 rounded-full"
                         />
                       )}
                       <span className="hover:underline cursor-pointer truncate">
-                        By {doc.uploader_name}
+                        By {doc.uploaderName}
                       </span>
                     </div>
                   )}

@@ -1,7 +1,6 @@
 import { DocumentList } from "@/components/DocumentList";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import Image from "next/image";
-import Link from "next/link";
 
 export const metadata = {
   title: "Linear - Home",

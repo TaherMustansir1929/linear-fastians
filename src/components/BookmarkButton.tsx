@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
-import { toggleBookmarkAction } from "@/app/actions";
+import { client } from "@/lib/hono";
+import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
@@ -18,8 +19,24 @@ export function BookmarkButton({
   initialIsBookmarked,
 }: BookmarkButtonProps) {
   const { isSignedIn } = useUser();
-  const [isPending, startTransition] = useTransition();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await client.api.bookmarks[":id"].toggle.$post({
+        param: { id: documentId },
+      });
+      if (!res.ok) throw new Error("Bookmark failed");
+      return await res.json();
+    },
+    onError: () => {
+      setIsBookmarked(!isBookmarked); // Revert
+      toast.error("Failed to update bookmark");
+    },
+    onSuccess: () => {
+      // Success
+    },
+  });
 
   const handleToggle = () => {
     if (!isSignedIn) {
@@ -30,16 +47,12 @@ export function BookmarkButton({
     const previous = isBookmarked;
     setIsBookmarked(!isBookmarked); // Optimistic
 
-    startTransition(async () => {
-      try {
-        await toggleBookmarkAction(documentId);
+    mutation.mutate(undefined, {
+      onSuccess: () => {
         toast.success(
           previous ? "Removed from bookmarks" : "Added to bookmarks"
         );
-      } catch (e) {
-        setIsBookmarked(previous);
-        toast.error("Failed to update bookmark");
-      }
+      },
     });
   };
 
@@ -53,7 +66,7 @@ export function BookmarkButton({
         !isBookmarked && "text-muted-foreground"
       )}
       onClick={handleToggle}
-      disabled={isPending}
+      disabled={mutation.isPending}
     >
       <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />
       <span>{isBookmarked ? "Saved" : "Save"}</span>

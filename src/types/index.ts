@@ -3,40 +3,40 @@ export type FileType = "pdf" | "md" | "html" | "latex" | "txt";
 export interface Document {
   id: string;
   title: string;
-  file_path: string;
-  file_type: FileType;
+  filePath: string;
+  fileType: FileType;
   subject: string;
   tags: string[] | null;
-  user_id: string;
-  uploader_name?: string | null;
-  uploader_avatar?: string | null;
-  created_at: string;
-  view_count: number;
-  upvote_count: number;
-  downvote_count: number;
+  userId: string;
+  uploaderName?: string | null;
+  uploaderAvatar?: string | null;
+  createdAt: string;
+  viewCount: number;
+  upvoteCount: number;
+  downvoteCount: number;
 }
 
 export interface User {
   id: string;
   email: string;
-  full_name: string | null;
-  avatar_url: string | null;
-  reputation_score: number;
-  total_views: number;
-  total_upvotes: number;
-  total_downvotes: number;
+  fullName: string | null;
+  avatarUrl: string | null;
+  reputationScore: number;
+  totalViews: number;
+  totalUpvotes: number;
+  totalDownvotes: number;
   role: string;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface Comment {
   id: string;
-  user_id: string;
-  document_id: string;
+  userId: string;
+  documentId: string;
   content: string;
-  created_at: string;
-  upvote_count: number;
-  downvote_count: number;
+  createdAt: string;
+  upvoteCount: number;
+  downvoteCount: number;
   user?: User; // Joined
 }
 

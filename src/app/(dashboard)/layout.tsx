@@ -1,9 +1,11 @@
 import React from "react";
 import { DashboardProvider } from "../../components/dashboard";
 import { auth } from "@clerk/nextjs/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 
 import { Document } from "@/types";
+import { db } from "@/db";
+import { bookmarks, documents as documentsSchema } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const { userId } = await auth();
@@ -13,23 +15,48 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 
   if (userId) {
     // Fetch User Docs
-    const { data: userDocs } = await supabaseAdmin
-      .from("documents")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
-    documents = (userDocs as Document[]) || [];
+    const userDocs = await db
+      .select()
+      .from(documentsSchema)
+      .where(eq(documentsSchema.userId, userId))
+      .orderBy(desc(documentsSchema.createdAt));
+
+    documents = userDocs.map((doc) => ({
+      ...doc,
+      fileType: doc.fileType as Document["fileType"],
+      createdAt: doc.createdAt.toISOString(),
+      viewCount: doc.viewCount || 0,
+      upvoteCount: doc.upvoteCount || 0,
+      downvoteCount: doc.downvoteCount || 0,
+    }));
 
     // Fetch Bookmarks
-    const { data: bookmarks } = await supabaseAdmin
-      .from("bookmarks")
-      .select("document:documents(*)")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+    const fetchedBookmarks = await db
+      .select()
+      .from(bookmarks)
+      .where(eq(bookmarks.userId, userId))
+      .innerJoin(documentsSchema, eq(documentsSchema.id, bookmarks.documentId))
+      .orderBy(desc(bookmarks.createdAt));
 
     // Transform for Sidebar
-    bookmarkedDocuments =
-      (bookmarks?.map((b: any) => b.document) as Document[]) || [];
+    bookmarkedDocuments = fetchedBookmarks.map((b) => {
+      return {
+        id: b.documents.id,
+        title: b.documents.title,
+        filePath: b.documents.filePath,
+        fileType: b.documents.fileType,
+        subject: b.documents.subject,
+        tags: b.documents.tags,
+        userId: b.documents.userId,
+        uploaderName: b.documents.uploaderName,
+        uploaderAvatar: b.documents.uploaderAvatar,
+        createdAt:
+          b.bookmarks.createdAt?.toISOString() || new Date().toISOString(),
+        viewCount: b.documents.viewCount || 0,
+        upvoteCount: b.documents.upvoteCount || 0,
+        downvoteCount: b.documents.downvoteCount || 0,
+      } as Document;
+    });
   }
 
   return (

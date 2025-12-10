@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { logTimeAction } from "@/app/actions";
+import { client } from "@/lib/hono";
 
 interface TimeTrackerProps {
   documentId: string;
@@ -22,16 +22,16 @@ export function TimeTracker({ documentId }: TimeTrackerProps) {
     // Heartbeat every 30 seconds
     const interval = setInterval(() => {
       if (isTabActive.current) {
-        logTimeAction(documentId, 30);
+        client.api.documents[":id"]["log-time"].$post({
+          param: { id: documentId },
+          json: { seconds: 30 },
+        });
       }
     }, 30000);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       clearInterval(interval);
-      // Optional: Log any remaining time on unmount?
-      // Complicated with server actions on unmount (often cancelled).
-      // Stick to interval for simplicity.
     };
   }, [documentId]);
 

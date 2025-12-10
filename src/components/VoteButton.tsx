@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowBigUp, ArrowBigDown } from "lucide-react";
-import { voteDocumentAction } from "@/app/actions";
+import { client } from "@/lib/hono";
+import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
@@ -12,7 +13,7 @@ interface VoteButtonProps {
   documentId: string;
   initialUpvotes: number;
   initialDownvotes: number;
-  userVote?: 1 | -1 | null; // Pass from server if possible, else null
+  userVote?: 1 | -1 | null;
 }
 
 export function VoteButton({
@@ -22,7 +23,6 @@ export function VoteButton({
   userVote,
 }: VoteButtonProps) {
   const { isSignedIn } = useUser();
-  const [isPending, startTransition] = useTransition();
   const [optimisticVote, setOptimisticVote] = useState<{
     type: 1 | -1 | null;
     up: number;
@@ -33,15 +33,26 @@ export function VoteButton({
     down: initialDownvotes,
   });
 
+  const mutation = useMutation({
+    mutationFn: async (type: 1 | -1) => {
+      const res = await client.api.documents[":id"].vote.$post({
+        param: { id: documentId },
+        json: { voteType: type },
+      });
+      if (!res.ok) throw new Error("Vote failed");
+      return await res.json();
+    },
+    onError: () => {
+      toast.error("Failed to vote");
+    },
+  });
+
   const handleVote = (type: 1 | -1) => {
     if (!isSignedIn) {
       toast.error("Please sign in to vote");
       return;
     }
 
-    const previous = { ...optimisticVote };
-
-    // Optimistic Update
     setOptimisticVote((curr) => {
       let newUp = curr.up;
       let newDown = curr.down;
@@ -56,14 +67,7 @@ export function VoteButton({
       return { type: newType, up: newUp, down: newDown };
     });
 
-    startTransition(async () => {
-      try {
-        await voteDocumentAction(documentId, type);
-      } catch (e) {
-        toast.error("Failed to vote");
-        setOptimisticVote(previous);
-      }
-    });
+    mutation.mutate(type);
   };
 
   return (
@@ -77,7 +81,7 @@ export function VoteButton({
             optimisticVote.type === 1 && "text-emerald-600 bg-emerald-100"
           )}
           onClick={() => handleVote(1)}
-          disabled={isPending}
+          disabled={mutation.isPending}
         >
           <ArrowBigUp
             className={cn(
@@ -107,7 +111,7 @@ export function VoteButton({
             optimisticVote.type === -1 && "text-rose-600 bg-rose-100"
           )}
           onClick={() => handleVote(-1)}
-          disabled={isPending}
+          disabled={mutation.isPending}
         >
           <ArrowBigDown
             className={cn(

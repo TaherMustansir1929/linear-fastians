@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { incrementViewAction } from "@/app/actions";
+import { client } from "@/lib/hono";
 
 export function ViewTracker({ documentId }: { documentId: string }) {
   const hasIncremented = useRef(false);
 
   useEffect(() => {
     if (!hasIncremented.current) {
-      incrementViewAction(documentId);
+      client.api.documents[":id"].view.$post({
+        param: { id: documentId },
+      });
       hasIncremented.current = true;
     }
   }, [documentId]);

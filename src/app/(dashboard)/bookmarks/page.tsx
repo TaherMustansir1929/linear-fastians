@@ -1,7 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
-import { auth } from "@clerk/nextjs/server";
-import { format } from "date-fns";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,10 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { auth } from "@clerk/nextjs/server";
+import { format } from "date-fns";
 import { FileInput, FileText, User } from "lucide-react";
+import Link from "next/link";
 
 import { RemoveBookmarkButton } from "@/components/RemoveBookmarkButton";
+import { db } from "@/db";
+import { bookmarks as bookmarksSchema, documents } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 export default async function BookmarksPage() {
   const { userId } = await auth();
@@ -22,11 +24,12 @@ export default async function BookmarksPage() {
     return <div>Please sign in.</div>;
   }
 
-  const { data: bookmarks } = await supabaseAdmin
-    .from("bookmarks")
-    .select("*, document:documents(*)") // Join documents
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+  const bookmarks = await db
+    .select()
+    .from(bookmarksSchema)
+    .where(eq(bookmarksSchema.userId, userId))
+    .innerJoin(documents, eq(documents.id, bookmarksSchema.documentId))
+    .orderBy(desc(bookmarksSchema.createdAt));
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -46,33 +49,35 @@ export default async function BookmarksPage() {
           <TableBody>
             {bookmarks && bookmarks.length > 0 ? (
               bookmarks.map((b) => (
-                <TableRow key={b.id}>
+                <TableRow key={b.bookmarks.id}>
                   <TableCell className="font-medium">
                     <Link
-                      href={`/documents/${b.document.id}`}
+                      href={`/documents/${b.documents.id}`}
                       className="flex items-center gap-2 hover:underline"
                     >
                       <FileText className="h-4 w-4 text-primary" />
-                      {b.document.title}
+                      {b.documents.title}
                     </Link>
                   </TableCell>
-                  <TableCell>{b.document.subject}</TableCell>
+                  <TableCell>{b.documents.subject}</TableCell>
                   <TableCell>
                     {/* Display Uploader */}
                     <div className="flex items-center gap-2">
                       {/* Avatar could go here if available in uploader_avatar */}
                       <Link
-                        href={`/profile/${b.document.user_id}`}
+                        href={`/profile/${b.documents.userId}`}
                         className="text-muted-foreground hover:text-black hover:underline"
                       >
                         <span className="text-sm flex items-center gap-2">
                           <User className="h-4 w-4" />
-                          {b.document.uploader_name || "Unknown"}
+                          {b.documents.uploaderName || "Unknown"}
                         </span>
                       </Link>
                     </div>
                   </TableCell>
-                  <TableCell>{format(new Date(b.created_at), "PPP")}</TableCell>
+                  <TableCell>
+                    {format(new Date(b.bookmarks.createdAt!), "PPP")}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Button
@@ -82,11 +87,11 @@ export default async function BookmarksPage() {
                         title="Open Document"
                         asChild
                       >
-                        <Link href={`/documents/${b.document.id}`}>
+                        <Link href={`/documents/${b.documents.id}`}>
                           <FileInput />
                         </Link>
                       </Button>
-                      <RemoveBookmarkButton documentId={b.document.id} />
+                      <RemoveBookmarkButton documentId={b.documents.id} />
                     </div>
                   </TableCell>
                 </TableRow>
