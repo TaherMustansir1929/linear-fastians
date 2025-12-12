@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { Textarea } from "@/components/ui/textarea";
 import { client } from "@/lib/hono";
 import { Comment } from "@/types";

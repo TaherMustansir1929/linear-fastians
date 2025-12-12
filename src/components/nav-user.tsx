@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
+} from "@/components/animate-ui/components/radix/sidebar";
 import { SignOutButton } from "@clerk/nextjs";
 import { UserProfile } from "@clerk/clerk-react";
 import { Button } from "./ui/button";

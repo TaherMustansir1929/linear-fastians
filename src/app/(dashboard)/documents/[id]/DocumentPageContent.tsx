@@ -6,7 +6,7 @@ import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
 import { PDFViewer } from "@/components/renderers/PDFViewer";
 import { HTMLViewer } from "@/components/renderers/HTMLViewer";
 import { TextViewer } from "@/components/renderers/TextViewer";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { Download, Calendar, Tag, Eye, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { TimeTracker } from "@/components/TimeTracker";

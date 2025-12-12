@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 import { client } from "@/lib/hono";
 import { useMutation } from "@tanstack/react-query";

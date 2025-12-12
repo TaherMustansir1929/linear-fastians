@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { BookmarkX } from "lucide-react";
 import { client } from "@/lib/hono";
 import { toast } from "sonner";

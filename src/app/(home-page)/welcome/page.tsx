@@ -1,5 +1,5 @@
 import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { format } from "date-fns";
 import { ArrowLeft, Calendar, Download, Tag } from "lucide-react";
 import Link from "next/link";

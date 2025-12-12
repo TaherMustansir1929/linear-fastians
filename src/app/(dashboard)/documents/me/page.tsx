@@ -1,9 +1,8 @@
 "use client";
 
+import { SubjectFolderView } from "@/components/SubjectFolderView";
 import { useDocuments } from "@/hooks/useDocuments";
 import { useUser } from "@clerk/nextjs";
-import { UploadModal } from "@/components/UploadModal";
-import { SubjectFolderView } from "@/components/SubjectFolderView";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -15,10 +14,6 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="flex justify-end mb-4">
-        <UploadModal />
-      </div>
-
       <SubjectFolderView documents={documents || []} title="My Documents" />
     </div>
   );

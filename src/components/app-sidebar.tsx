@@ -3,6 +3,7 @@
 import {
   Bookmark,
   Frame,
+  Home,
   LifeBuoy,
   PieChart,
   Send,
@@ -12,10 +13,6 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { NavDocuments } from "@/components/nav-main";
-import { NavPages } from "@/components/nav-projects";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -24,9 +21,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import Image from "next/image";
+} from "@/components/animate-ui/components/radix/sidebar";
+import { NavDocuments } from "@/components/nav-main";
+import { NavPages } from "@/components/nav-projects";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 const data = {
   navDocs: [
@@ -79,8 +80,17 @@ const data = {
   ],
 };
 
+import {
+  FlipButton,
+  FlipButtonBack,
+  FlipButtonFront,
+} from "@/components/animate-ui/components/buttons/flip";
 import { Document } from "@/types";
-import Link from "next/link";
+import {
+  Spring,
+  SpringElement,
+  SpringProvider,
+} from "./animate-ui/primitives/animate/spring";
 import { Separator } from "./ui/separator";
 
 export function AppSidebar({
@@ -101,15 +111,48 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg border border-border p-1">
-                  <Image src={"/icon.svg"} alt="logo" width={36} height={36} />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Linear</span>
-                  <span className="truncate text-xs">Student</span>
-                </div>
-              </Link>
+              <div>
+                <FlipButton className="w-full">
+                  <FlipButtonFront
+                    className="w-full p-0 cursor-pointer"
+                    variant={"ghost"}
+                  >
+                    <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg border border-border p-1">
+                      <Image
+                        src={"/icon.svg"}
+                        alt="logo"
+                        width={36}
+                        height={36}
+                        draggable={false}
+                      />
+                    </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">Linear</span>
+                      <span className="truncate text-xs">Student</span>
+                    </div>
+                  </FlipButtonFront>
+                  <FlipButtonBack
+                    className="w-full p-0 cursor-pointer"
+                    variant={"ghost"}
+                    onClick={() => (window.location.pathname = "/")}
+                  >
+                    <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-10 items-center justify-center rounded-lg border border-border p-1">
+                      <Image
+                        src={"/icon.svg"}
+                        alt="logo"
+                        width={36}
+                        height={36}
+                        draggable={false}
+                      />
+                    </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium flex items-center gap-1">
+                        <Home /> Home
+                      </span>
+                    </div>
+                  </FlipButtonBack>
+                </FlipButton>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

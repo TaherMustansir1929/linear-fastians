@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { UploadModal } from "@/components/UploadModal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import {

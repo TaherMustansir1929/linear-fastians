@@ -1,5 +1,7 @@
 "use client";
 import { AppSidebar } from "@/components/app-sidebar";
+import { usePathname } from "next/navigation";
+import React from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,7 +15,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/animate-ui/components/radix/sidebar";
 
 import { Document } from "@/types";
 
@@ -26,6 +28,8 @@ export const DashboardProvider = ({
   userDocuments?: Document[];
   bookmarkedDocuments?: Document[];
 }) => {
+  const pathname = usePathname();
+
   return (
     <SidebarProvider>
       <AppSidebar
@@ -42,10 +46,34 @@ export const DashboardProvider = ({
             />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-                </BreadcrumbItem>
-                {/* <BreadcrumbSeparator className="hidden md:block" /> */}
+                {pathname
+                  .split("/")
+                  .filter(Boolean)
+                  .map((segment, index, arr) => {
+                    const href = `/${arr.slice(0, index + 1).join("/")}`;
+                    const isLast = index === arr.length - 1;
+                    const title =
+                      segment.charAt(0).toUpperCase() + segment.slice(1);
+
+                    return (
+                      <React.Fragment key={href}>
+                        <BreadcrumbItem className="hidden md:block">
+                          {isLast ? (
+                            <BreadcrumbPage>{title}</BreadcrumbPage>
+                          ) : (
+                            <BreadcrumbLink
+                              href={href === "/documents" ? href + "/me" : href}
+                            >
+                              {title}
+                            </BreadcrumbLink>
+                          )}
+                        </BreadcrumbItem>
+                        {!isLast && (
+                          <BreadcrumbSeparator className="hidden md:block" />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

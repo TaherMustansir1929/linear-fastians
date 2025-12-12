@@ -1,7 +1,7 @@
 "use client";
 
 import { SignOutButton, useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { ShieldAlert, LogOut } from "lucide-react";
 
 export default function UnauthorizedDomainPage() {

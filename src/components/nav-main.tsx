@@ -1,33 +1,30 @@
 "use client";
 
-import { Document, Subject } from "@/types";
-import {
-  Files,
-  FolderItem,
-  FolderTrigger,
-  FolderPanel,
-  FileItem,
-  SubFiles,
-} from "./animate-ui/components/base/files";
 import {
   SidebarGroup,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-} from "./ui/sidebar";
-import Link from "next/link";
+} from "@/components/animate-ui/components/radix/sidebar";
+import { Document, Subject } from "@/types";
 import { useRouter } from "next/navigation";
+import {
+  FileItem,
+  Files,
+  FolderItem,
+  FolderPanel,
+  FolderTrigger,
+  SubFiles,
+} from "@/components/animate-ui/components/base/files";
 
 import { ChevronRight, LucideIcon } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
+} from "@/components/animate-ui/primitives/radix/collapsible";
 
 export function NavDocuments({
   documents,
@@ -81,7 +78,7 @@ export function NavDocuments({
                       <Files className="w-full">
                         {subjects.map((sub) => (
                           <FolderItem key={sub} value={sub}>
-                            <FolderTrigger className="capitalize pl-8">
+                            <FolderTrigger className="capitalize">
                               {sub}
                             </FolderTrigger>
                             <FolderPanel>
@@ -92,8 +89,10 @@ export function NavDocuments({
                                     onClick={() => handleFileClick(doc.id)}
                                     className="cursor-pointer"
                                   >
-                                    <FileItem className="pl-8">
-                                      {doc.title}
+                                    <FileItem className="text-xs">
+                                      {doc.title.length > 20
+                                        ? doc.title.slice(0, 20) + "..."
+                                        : doc.title}
                                     </FileItem>
                                   </div>
                                 ))}

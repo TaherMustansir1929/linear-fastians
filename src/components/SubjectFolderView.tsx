@@ -10,7 +10,7 @@ import {
   FileItem,
   SubFiles,
 } from "./animate-ui/components/base/files";
-import { Button } from "./ui/button";
+import { Button } from "@/components/animate-ui/components/buttons/button";
 import { useRouter } from "next/navigation";
 import {
   FileIcon,
@@ -32,6 +32,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { useDeleteDocument } from "@/hooks/useDocuments";
+import { UploadModal } from "./UploadModal";
 
 interface SubjectFolderViewProps {
   documents: Document[];
@@ -71,6 +72,7 @@ export function SubjectFolderView({
       <div>
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{title}</h1>
+          <UploadModal />
         </div>
         <div className="text-center py-12 border rounded-lg bg-muted/10">
           <p className="text-muted-foreground">No documents found.</p>
