@@ -57,10 +57,12 @@ export function useDocumentDetails(id: string) {
   });
 }
 
+import { Subject } from "@/types";
+
 interface UpdateVariables {
   id: string;
   title: string;
-  subject: string;
+  subject: Subject;
 }
 
 export function useUpdateDocument() {
@@ -87,7 +89,7 @@ export function useUpdateDocument() {
 interface UploadVariables {
   file: File;
   title: string;
-  subject: string;
+  subject: Subject;
   userFullName?: string | null;
   userAvatar?: string | null;
 }
@@ -109,7 +111,14 @@ export const uploadFile = async ({
   const userId = "temp"; // The backend determines exact path or we send only filename.
   // Actually, backend needs path to generate signed URL.
   // Let's generate a path here.
-  const filePath = `${Date.now()}_${file.name}`;
+  // Sanitize function for S3 keys
+  const sanitize = (str: string) => str.replace(/[^a-zA-Z0-9-_]/g, "_");
+  const cleanSubject = sanitize(subject);
+  const cleanUser = sanitize(userFullName || "Anonymous");
+  const cleanFileName = sanitize(file.name.split(".").slice(0, -1).join(".")); // Name without extension
+
+  // Format: root/<subject>/<user>/<timestamp>_<filename>.<ext>
+  const filePath = `root/${cleanSubject}/${cleanUser}/${Date.now()}_${cleanFileName}.${fileExt}`;
 
   // 1. Get Presigned URL
   const urlRes = await client.api.documents["upload-url"].$post({

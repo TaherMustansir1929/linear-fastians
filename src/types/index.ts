@@ -5,7 +5,7 @@ export interface Document {
   title: string;
   filePath: string;
   fileType: FileType;
-  subject: string;
+  subject: Subject;
   tags: string[] | null;
   userId: string;
   uploaderName?: string | null;
@@ -41,11 +41,13 @@ export interface Comment {
 }
 
 export const SUBJECTS = [
-  "Calculus (CAL)",
-  "Applied Physics (AP)",
-  "Programming Fundamentals (PF)",
-  "Functional English (FE)",
-  "Ideology and Constitution of Pakistan (ICP)",
-  "Islamic Studies (IST)",
+  "CAL",
+  "AP",
+  "PF",
+  "FE",
+  "ICP",
+  "IST",
   "Other",
 ] as const;
+
+export type Subject = (typeof SUBJECTS)[number];

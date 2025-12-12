@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,10 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SUBJECTS, FileType } from "@/types";
+import { useUploadDocument } from "@/hooks/useDocuments";
+import { SUBJECTS, Subject } from "@/types";
+import { useUser } from "@clerk/nextjs";
 import { Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useUploadDocument } from "@/hooks/useDocuments";
+import { useState } from "react";
 
 export function UploadModal() {
   const { user } = useUser();
@@ -34,7 +34,7 @@ export function UploadModal() {
 
   // Form State
   const [title, setTitle] = useState("");
-  const [subject, setSubject] = useState<string>("");
+  const [subject, setSubject] = useState<Subject | "">("");
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +103,11 @@ export function UploadModal() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="subject">Subject</Label>
-            <Select onValueChange={setSubject} value={subject} required>
+            <Select
+              onValueChange={(val) => setSubject(val as Subject)}
+              value={subject}
+              required
+            >
               <SelectTrigger className="cursor-pointer">
                 <SelectValue placeholder="Select a subject" />
               </SelectTrigger>

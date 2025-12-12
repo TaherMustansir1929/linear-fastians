@@ -62,11 +62,6 @@ const data = {
       icon: Frame,
     },
     {
-      name: "Bookmarks",
-      url: "/bookmarks",
-      icon: Bookmark,
-    },
-    {
       name: "Community",
       url: "/community",
       icon: UsersRound,
@@ -100,25 +95,6 @@ export function AppSidebar({
   const documents = userDocuments || [];
   const bookmarks = bookmarkedDocuments || [];
 
-  const navDocs = {
-    ...data.navDocs[0],
-    items: documents.map((doc) => ({
-      title: doc.title,
-      url: `/documents/${doc.id}`,
-    })),
-  };
-
-  const navBookmarks = {
-    title: "Bookmarks",
-    url: "/bookmarks",
-    icon: Bookmark,
-    isActive: false,
-    items: bookmarks.map((doc) => ({
-      title: doc.title,
-      url: `/documents/${doc.id}`,
-    })),
-  };
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -141,8 +117,20 @@ export function AppSidebar({
       <Separator />
       <SidebarContent>
         <NavPages projects={data.pages} />
-        <NavDocuments title="Documents" items={navDocs} />
-        {bookmarks.length > 0 && <NavDocuments items={navBookmarks} />}
+        <Separator />
+        <NavDocuments
+          title="My Documents"
+          documents={documents}
+          url="/documents/me"
+          icon={SquareTerminal}
+        />
+        <Separator />
+        <NavDocuments
+          title="Bookmarks"
+          documents={bookmarks}
+          url="/bookmarks"
+          icon={Bookmark}
+        />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

@@ -13,6 +13,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { SUBJECTS } from "@/types";
 
 const app = new Hono()
   .get("/", async (c) => {
@@ -36,7 +37,7 @@ const app = new Hono()
         title: z.string(),
         filePath: z.string(),
         fileType: z.string(),
-        subject: z.string(),
+        subject: z.enum(SUBJECTS),
         uploaderName: z.string().optional(),
         uploaderAvatar: z.string().optional(),
       })
@@ -232,7 +233,7 @@ const app = new Hono()
       "json",
       z.object({
         title: z.string(),
-        subject: z.string(),
+        subject: z.enum(SUBJECTS),
       })
     ),
     async (c) => {

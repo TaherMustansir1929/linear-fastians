@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SUBJECTS } from "@/types";
+import { SUBJECTS, Subject } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Upload } from "lucide-react";
 import { uploadFile } from "@/hooks/useDocuments";
@@ -24,7 +24,7 @@ import { Progress } from "@/components/ui/progress";
 interface BatchFile {
   file: File;
   title: string;
-  subject: string;
+  subject: Subject | "";
   status: "pending" | "uploading" | "completed" | "error";
 }
 
@@ -37,7 +37,7 @@ export default function BatchUploadPage() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files).map((file) => ({
+      const newFiles: BatchFile[] = Array.from(e.target.files).map((file) => ({
         file,
         title: file.name.split(".").slice(0, -1).join("."), // Auto title
         subject: "",
@@ -84,7 +84,7 @@ export default function BatchUploadPage() {
           await uploadFile({
             file: batchFile.file,
             title: batchFile.title,
-            subject: batchFile.subject,
+            subject: batchFile.subject as Subject,
 
             userFullName: user.fullName || user.username || "Anonymous",
             userAvatar: user.imageUrl,
@@ -120,6 +120,7 @@ export default function BatchUploadPage() {
         <Input
           type="file"
           multiple
+          accept=".pdf,.md,.markdown,.html,.htm,.txt,.tex,.latex"
           onChange={handleFileSelect}
           className="hidden"
           id="batch-input"

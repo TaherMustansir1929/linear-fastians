@@ -4,13 +4,30 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, CirclePlay } from "lucide-react";
 import Image from "next/image";
 import TeamSection from "./team-section-one";
+import { Ribbons } from "./ribbons";
 
 export default function HeroSection() {
   return (
     <>
       {/* <HeroHeader /> */}
       <main className="overflow-hidden">
-        <section className="bg-linear-to-b to-muted from-background">
+        <Ribbons
+          baseThickness={30}
+          colors={["#ffffff"]}
+          speedMultiplier={0.5}
+          maxAge={500}
+          enableFade={false}
+          enableShaderEffect={true}
+        />
+        <section className="bg-linear-to-b to-muted from-background overflow-hidden relative">
+          <Ribbons
+            baseThickness={30}
+            colors={["#ffffff"]}
+            speedMultiplier={0.5}
+            maxAge={500}
+            enableFade={false}
+            enableShaderEffect={true}
+          />
           <div className="relative py-24">
             <div className="relative z-10 mx-auto w-full max-w-5xl px-6">
               <div className="md:w-1/2">

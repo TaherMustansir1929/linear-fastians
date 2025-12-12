@@ -9,7 +9,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // This client works with MinIO, Supabase S3, AWS, or Cloudflare R2
 const s3 = new S3Client({
-  region: "auto", // MinIO and Supabase usually ignore this, but 'auto' or 'us-east-1' is safe
+  region: process.env.S3_REGION || "auto", // MinIO and Supabase usually ignore this, but 'auto' or 'us-east-1' is safe
   endpoint: process.env.S3_ENDPOINT,
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY!,

@@ -1,17 +1,7 @@
-export const SUBJECTS = [
-  "Calculus",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Computer Science",
-  "History",
-  "Literature",
-  "Economics",
-  "Psychology",
-  "Sociology",
-] as const;
+import { SUBJECTS, Subject } from "@/types";
 
-export type Subject = (typeof SUBJECTS)[number];
+export { SUBJECTS };
+export type { Subject };
 
 export const socialLinks = {
   discord: "https://discord.gg/fRQCqK89EF",
@@ -71,7 +61,7 @@ export const DUMMY_DASHBOARD_DATA = {
       id: "1",
       document: {
         title: "Organic Chemistry II",
-        subject: "Chemistry",
+        subject: "Other",
         uploader_name: "Sarah C.",
       },
       accessed_at: "2024-05-20T10:00:00Z",
@@ -80,7 +70,7 @@ export const DUMMY_DASHBOARD_DATA = {
       id: "2",
       document: {
         title: "Data Structures BFS/DFS",
-        subject: "Computer Science",
+        subject: "PF",
         uploader_name: "Mike R.",
       },
       accessed_at: "2024-05-19T14:30:00Z",
@@ -89,19 +79,19 @@ export const DUMMY_DASHBOARD_DATA = {
       id: "3",
       document: {
         title: "Macroeconomics 101",
-        subject: "Economics",
+        subject: "Other",
         uploader_name: "Jessica P.",
       },
       accessed_at: "2024-05-18T09:00:00Z",
     },
   ],
   subjectInterests: [
-    { subject: "Calculus", score: 120 },
-    { subject: "Physics", score: 98 },
-    { subject: "CS", score: 86 },
-    { subject: "Economics", score: 65 },
-    { subject: "History", score: 40 },
-    { subject: "Biology", score: 55 },
+    { subject: "CAL", score: 120 },
+    { subject: "AP", score: 98 },
+    { subject: "PF", score: 86 },
+    { subject: "FE", score: 65 },
+    { subject: "IST", score: 40 },
+    { subject: "Other", score: 55 },
   ],
   totalTimeSeconds: 124500, // ~34.5 hours
 };
