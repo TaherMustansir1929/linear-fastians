@@ -68,7 +68,7 @@ const data = {
     },
     {
       name: "Community",
-      url: "/coming-soon",
+      url: "/community",
       icon: UsersRound,
     },
     {
@@ -86,6 +86,7 @@ const data = {
 
 import { Document } from "@/types";
 import Link from "next/link";
+import { Separator } from "./ui/separator";
 
 export function AppSidebar({
   userDocuments,
@@ -137,6 +138,7 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      <Separator />
       <SidebarContent>
         <NavPages projects={data.pages} />
         <NavDocuments title="Documents" items={navDocs} />

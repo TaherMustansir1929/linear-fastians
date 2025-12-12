@@ -1,7 +1,7 @@
 "use client";
 
 import { useDocumentDetails } from "@/hooks/useDocuments";
-import { supabase } from "@/lib/supabase";
+
 import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
 import { PDFViewer } from "@/components/renderers/PDFViewer";
 import { HTMLViewer } from "@/components/renderers/HTMLViewer";
@@ -25,10 +25,7 @@ export default function DocumentPageContent({ id }: { id: string }) {
   const userVote = data?.userVote;
   const isBookmarked = data?.isBookmarked;
 
-  const publicUrl = doc
-    ? supabase.storage.from("documents").getPublicUrl(doc.filePath).data
-        .publicUrl
-    : "";
+  const publicUrl = data?.signedUrl || "";
 
   // Fetch content if needed
   const shouldFetchContent =

@@ -85,7 +85,7 @@ export default function BatchUploadPage() {
             file: batchFile.file,
             title: batchFile.title,
             subject: batchFile.subject,
-            userId: user.id,
+
             userFullName: user.fullName || user.username || "Anonymous",
             userAvatar: user.imageUrl,
           });

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+
 import { Document, Comment, FileType } from "@/types";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
@@ -51,6 +51,7 @@ export function useDocumentDetails(id: string) {
         docComments: data.docComments as Comment[],
         userVote: data.userVote as number | null,
         isBookmarked: data.isBookmarked as boolean,
+        signedUrl: data.signedUrl as string,
       };
     },
   });
@@ -87,7 +88,6 @@ interface UploadVariables {
   file: File;
   title: string;
   subject: string;
-  userId: string;
   userFullName?: string | null;
   userAvatar?: string | null;
 }
@@ -96,7 +96,6 @@ export const uploadFile = async ({
   file,
   title,
   subject,
-  userId,
   userFullName,
   userAvatar,
 }: UploadVariables) => {
@@ -107,16 +106,31 @@ export const uploadFile = async ({
   else if (["html", "htm"].includes(fileExt)) fileType = "html";
   else if (["tex", "latex"].includes(fileExt)) fileType = "latex";
 
-  const filePath = `${userId}/${Date.now()}_${file.name}`;
+  const userId = "temp"; // The backend determines exact path or we send only filename.
+  // Actually, backend needs path to generate signed URL.
+  // Let's generate a path here.
+  const filePath = `${Date.now()}_${file.name}`;
 
-  // 1. Upload to Storage (Supabase Client)
-  const { error: uploadError } = await supabase.storage
-    .from("documents")
-    .upload(filePath, file);
+  // 1. Get Presigned URL
+  const urlRes = await client.api.documents["upload-url"].$post({
+    json: { filePath, fileType },
+  });
 
-  if (uploadError) throw uploadError;
+  if (!urlRes.ok) throw new Error("Failed to get upload URL");
+  const { url } = await urlRes.json();
 
-  // 2. Insert into DB via API
+  // 2. Upload to S3
+  const uploadRes = await fetch(url, {
+    method: "PUT",
+    body: file,
+    headers: {
+      "Content-Type": file.type || "application/octet-stream",
+    },
+  });
+
+  if (!uploadRes.ok) throw new Error("Failed to upload file to storage");
+
+  // 3. Insert into DB via API
   const res = await client.api.documents.$post({
     json: {
       title,

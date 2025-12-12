@@ -12,6 +12,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.948.0",
+    "@aws-sdk/s3-request-presigner": "^3.948.0",
     "@clerk/nextjs": "^6.36.0",
     "@hono/clerk-auth": "^3.0.3",
     "@hono/zod-validator": "^0.7.5",
@@ -45,6 +47,7 @@
     "@supabase/supabase-js": "^2.86.2",
     "@tabler/icons-react": "^3.35.0",
     "@tanstack/react-query": "^5.90.12",
+    "@vercel/analytics": "^1.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

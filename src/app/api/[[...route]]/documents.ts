@@ -8,7 +8,7 @@ import {
   comments,
   bookmarks,
 } from "@/db/schema";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getUploadUrl, getFileUrl, deleteFile } from "@/lib/storage";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
@@ -97,6 +97,25 @@ const app = new Hono()
       return c.json({ success: true });
     }
   )
+  .post(
+    "/upload-url",
+    zValidator(
+      "json",
+      z.object({
+        filePath: z.string(),
+        fileType: z.string(),
+      })
+    ),
+    async (c) => {
+      const { filePath, fileType } = c.req.valid("json");
+      const { userId } = await auth();
+
+      if (!userId) return c.json({ error: "Unauthorized" }, 401);
+
+      const url = await getUploadUrl(filePath, fileType);
+      return c.json({ url });
+    }
+  )
   .get("/:id", async (c) => {
     const id = c.req.param("id");
     const { userId } = await auth();
@@ -137,7 +156,9 @@ const app = new Hono()
       if (bookmark) isBookmarked = true;
     }
 
-    return c.json({ doc, docComments, userVote, isBookmarked });
+    const signedUrl = await getFileUrl(doc.filePath);
+
+    return c.json({ doc, docComments, userVote, isBookmarked, signedUrl });
   })
   .delete(
     "/:id",
@@ -163,12 +184,10 @@ const app = new Hono()
 
       // 2. Delete from Storage
       if (filePath) {
-        const { error: storageError } = await supabaseAdmin.storage
-          .from("documents")
-          .remove([filePath]);
-
-        if (storageError) {
-          console.error("Storage delete error:", storageError);
+        try {
+          await deleteFile(filePath);
+        } catch (error) {
+          console.error("Storage delete error:", error);
         }
       }
 

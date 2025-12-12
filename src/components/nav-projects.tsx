@@ -1,29 +1,16 @@
 "use client";
 
-import {
-  Folder,
-  MoreHorizontal,
-  Share,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export function NavPages({
   projects,
@@ -34,7 +21,7 @@ export function NavPages({
     icon: LucideIcon;
   }[];
 }) {
-  const { isMobile } = useSidebar();
+  const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -42,7 +29,13 @@ export function NavPages({
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton
+              asChild
+              className={cn(
+                pathname === item.url &&
+                  "bg-sidebar-border hover:bg-sidebar-border/90"
+              )}
+            >
               <a href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>

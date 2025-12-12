@@ -72,11 +72,8 @@ export function Navbar() {
                 <div className="flex flex-col gap-4 mt-8">
                   <NavLink href="/">Home</NavLink>
                   <NavLink href="/welcome">Welcome</NavLink>
-                  <NavLink href="/leaderboard">Leaderboard</NavLink>
-                  <NavLink href="/community">Community</NavLink>
                   <SignedIn>
                     <NavLink href="/dashboard">Dashboard</NavLink>
-                    <NavLink href="/upload/batch">Batch Upload</NavLink>
                   </SignedIn>
                 </div>
               </SheetContent>
@@ -93,8 +90,6 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-4 text-sm font-medium">
             <NavLink href="/">Home</NavLink>
             <NavLink href="/welcome">Welcome</NavLink>
-            <NavLink href="/leaderboard">Leaderboard</NavLink>
-            <NavLink href="/community">Community</NavLink>
           </div>
         </div>
 

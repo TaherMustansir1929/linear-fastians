@@ -1,21 +1,11 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-import { Toaster } from "@/components/ui/sonner";
-import Providers from "@/components/Providers";
 import { DomainRestrictor } from "@/components/DomainRestrictor";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+import Providers from "@/components/Providers";
+import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
+import type { Metadata } from "next";
+import { JetBrains_Mono } from "next/font/google";
+import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -38,11 +28,19 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <script
+            async
+            crossOrigin="anonymous"
+            src="https://tweakcn.com/live-preview.min.js"
+          />
+        </head>
         <body className={`${jetbrainsMono.variable} antialiased`}>
           <Providers>
             <DomainRestrictor />
             {children}
             <Toaster />
+            <Analytics />
           </Providers>
         </body>
       </html>
