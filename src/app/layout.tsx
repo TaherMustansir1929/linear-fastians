@@ -4,12 +4,17 @@ import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
 });
 
 export const metadata: Metadata = {
@@ -35,7 +40,9 @@ export default function RootLayout({
             src="https://tweakcn.com/live-preview.min.js"
           />
         </head>
-        <body className={`${jetbrainsMono.variable} antialiased`}>
+        <body
+          className={`${jetbrainsMono.variable} ${montserrat.variable} antialiased`}
+        >
           <Providers>
             <DomainRestrictor />
             {children}

@@ -147,6 +147,59 @@ export default function DashboardContent() {
         </Card>
       </div>
 
+      {/* Recently Accessed Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recently Accessed</CardTitle>
+          <div className="text-sm text-muted-foreground">
+            The last 10 documents you viewed.
+          </div>
+        </CardHeader>
+        <CardContent>
+          {recentDocs && recentDocs.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Document</TableHead>
+                  <TableHead>Subject</TableHead>
+                  <TableHead>Uploaded By</TableHead>
+                  <TableHead className="text-right">Accessed</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentDocs.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-medium">
+                      <Link
+                        href={`/documents/${log.documentId}`}
+                        className="flex items-center gap-2 hover:underline"
+                      >
+                        <FileText className="h-4 w-4 text-blue-500" />
+                        {log.document?.title || "Unknown Document"}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{log.document?.subject || "N/A"}</TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      <UserIcon className="h-3 w-3" />
+                      {log.document?.uploaderName || "Unknown"}
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {log.accessedAt
+                        ? format(new Date(log.accessedAt), "MMM d, h:mm a")
+                        : "N/A"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No recently accessed documents.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Row 1: Time Spent (Radial) & Activity (Area) & Subjects (Radar) */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-2">
@@ -155,6 +208,7 @@ export default function DashboardContent() {
             title="Time Invested"
             description="Total active time"
             footerText="Keep learning!"
+            subtitle="Total Time"
           />
         </div>
         <div className="col-span-3">
@@ -224,59 +278,6 @@ export default function DashboardContent() {
           )}
         </div>
       </div>
-
-      {/* Recently Accessed Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recently Accessed</CardTitle>
-          <div className="text-sm text-muted-foreground">
-            The last 10 documents you viewed.
-          </div>
-        </CardHeader>
-        <CardContent>
-          {recentDocs && recentDocs.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Document</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Uploaded By</TableHead>
-                  <TableHead className="text-right">Accessed</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentDocs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell className="font-medium">
-                      <Link
-                        href={`/documents/${log.documentId}`}
-                        className="flex items-center gap-2 hover:underline"
-                      >
-                        <FileText className="h-4 w-4 text-blue-500" />
-                        {log.document?.title || "Unknown Document"}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{log.document?.subject || "N/A"}</TableCell>
-                    <TableCell className="flex items-center gap-2">
-                      <UserIcon className="h-3 w-3" />
-                      {log.document?.uploaderName || "Unknown"}
-                    </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {log.accessedAt
-                        ? format(new Date(log.accessedAt), "MMM d, h:mm a")
-                        : "N/A"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No recently accessed documents.
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

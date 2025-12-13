@@ -171,7 +171,7 @@ export function DocumentList() {
                   <div className="flex justify-between items-start">
                     {getIcon(doc.fileType)}
                     <Badge variant="secondary" className="text-xs">
-                      {doc.subject.split("(")[1]?.replace(")", "") || "Gen"}
+                      {doc.subject || "Gen"}
                     </Badge>
                   </div>
                 </CardHeader>

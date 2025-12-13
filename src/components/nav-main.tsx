@@ -9,7 +9,7 @@ import {
   SidebarMenuSub,
 } from "@/components/animate-ui/components/radix/sidebar";
 import { Document, Subject } from "@/types";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FileItem,
   Files,
@@ -25,6 +25,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/animate-ui/primitives/radix/collapsible";
+import { cn } from "@/lib/utils";
 
 export function NavDocuments({
   documents,
@@ -38,6 +39,7 @@ export function NavDocuments({
   icon?: LucideIcon;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   // Group docs by subject
   const docsBySubject = documents.reduce((acc, doc) => {
@@ -59,7 +61,14 @@ export function NavDocuments({
         <SidebarMenuItem>
           <Collapsible key={title} asChild defaultOpen={false}>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={title}
+                className={cn(
+                  pathname === url &&
+                    "bg-sidebar-border hover:bg-sidebar-border/90"
+                )}
+              >
                 <a href={url}>
                   {Icon && <Icon />}
                   <span>{title}</span>
@@ -75,7 +84,7 @@ export function NavDocuments({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      <Files className="w-full">
+                      <Files className="w-full" defaultOpen={[]}>
                         {subjects.map((sub) => (
                           <FolderItem key={sub} value={sub}>
                             <FolderTrigger className="capitalize">

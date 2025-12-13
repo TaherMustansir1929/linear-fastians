@@ -4,7 +4,10 @@ import authors from "./authors";
 import books from "./books";
 import { HTTPException } from "hono/http-exception";
 
+import { loggerMiddleware } from "@/lib/logger";
+
 const app = new Hono().basePath("/api");
+app.use("*", loggerMiddleware);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

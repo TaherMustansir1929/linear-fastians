@@ -24,11 +24,13 @@ export function RadialChart({
   title,
   description,
   footerText,
+  subtitle,
 }: {
   timeSpentSeconds: number;
   title: string;
   description: string;
   footerText: string;
+  subtitle: string;
 }) {
   // Goal: e.g. 50 Hours (to make the chart look nice)
   const goalSeconds = 50 * 3600;
@@ -104,7 +106,7 @@ export function RadialChart({
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground text-sm"
                         >
-                          Total Interaction
+                          {subtitle}
                         </tspan>
                       </text>
                     );

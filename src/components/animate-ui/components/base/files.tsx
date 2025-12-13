@@ -24,14 +24,24 @@ import {
   type FileLabelProps as FileLabelPrimitiveProps,
 } from "@/components/animate-ui/primitives/base/files";
 import { cn } from "@/lib/utils";
+import { Subject } from "@/types";
 
-type GitStatus = "untracked" | "modified" | "deleted";
+type subject = "untracked" | "modified" | "deleted";
 
 type FilesProps = FilesPrimitiveProps;
 
-function Files({ className, children, ...props }: FilesProps) {
+function Files({
+  className,
+  children,
+  defaultOpen = [],
+  ...props
+}: FilesProps) {
   return (
-    <FilesPrimitive className={cn("p-2 w-full", className)} {...props}>
+    <FilesPrimitive
+      defaultOpen={defaultOpen}
+      className={cn("p-2 w-full", className)}
+      {...props}
+    >
       <FilesHighlightPrimitive className="bg-accent rounded-lg pointer-events-none">
         {children}
       </FilesHighlightPrimitive>
@@ -52,26 +62,34 @@ function FolderItem(props: FolderItemProps) {
 }
 
 type FolderTriggerProps = FileLabelPrimitiveProps & {
-  gitStatus?: GitStatus;
+  subject?: Subject;
+  triggerClassName?: string;
 };
 
 function FolderTrigger({
   children,
   className,
-  gitStatus,
+  subject,
+  triggerClassName,
   ...props
 }: FolderTriggerProps) {
   return (
     <FolderHeaderPrimitive>
-      <FolderTriggerPrimitive className="w-full text-start">
+      <FolderTriggerPrimitive
+        className={cn("w-full text-start", triggerClassName)}
+      >
         <FolderHighlightPrimitive>
           <FolderPrimitive className="flex items-center justify-between gap-2 p-2 pointer-events-none">
             <div
               className={cn(
                 "flex items-center gap-2",
-                gitStatus === "untracked" && "text-green-400",
-                gitStatus === "modified" && "text-amber-400",
-                gitStatus === "deleted" && "text-red-400"
+                subject === "ICP" && "text-emerald-600",
+                subject === "CAL" && "text-cyan-600",
+                subject === "AP" && "text-purple-600",
+                subject === "FE" && "text-pink-600",
+                subject === "PF" && "text-indigo-600",
+                subject === "IST" && "text-orange-600",
+                subject === "Other" && "text-yellow-600"
               )}
             >
               <FolderIconPrimitive
@@ -86,13 +104,17 @@ function FolderTrigger({
               </FileLabelPrimitive>
             </div>
 
-            {gitStatus && (
+            {subject && (
               <span
                 className={cn(
                   "rounded-full size-2",
-                  gitStatus === "untracked" && "bg-green-400",
-                  gitStatus === "modified" && "bg-amber-400",
-                  gitStatus === "deleted" && "bg-red-400"
+                  subject === "ICP" && "text-emerald-600",
+                  subject === "CAL" && "text-cyan-600",
+                  subject === "AP" && "text-purple-600",
+                  subject === "FE" && "text-pink-600",
+                  subject === "PF" && "text-indigo-600",
+                  subject === "IST" && "text-orange-600",
+                  subject === "Other" && "text-yellow-600"
                 )}
               />
             )}
@@ -115,7 +137,7 @@ function FolderPanel(props: FolderPanelProps) {
 
 type FileItemProps = FilePrimitiveProps & {
   icon?: React.ElementType;
-  gitStatus?: GitStatus;
+  subject?: subject;
   actions?: React.ReactNode;
 };
 
@@ -123,7 +145,7 @@ function FileItem({
   icon: Icon = FileIcon,
   className,
   children,
-  gitStatus,
+  subject,
   actions,
   ...props
 }: FileItemProps) {
@@ -132,9 +154,9 @@ function FileItem({
       <FilePrimitive
         className={cn(
           "flex items-center justify-between gap-2 p-2 pointer-events-none",
-          gitStatus === "untracked" && "text-green-400",
-          gitStatus === "modified" && "text-amber-400",
-          gitStatus === "deleted" && "text-red-400"
+          subject === "untracked" && "text-green-400",
+          subject === "modified" && "text-amber-400",
+          subject === "deleted" && "text-red-400"
         )}
       >
         <div className="flex items-center gap-2">
@@ -148,11 +170,11 @@ function FileItem({
 
         {actions ? (
           <div className="pointer-events-auto">{actions}</div>
-        ) : gitStatus ? (
+        ) : subject ? (
           <span className="text-sm font-medium">
-            {gitStatus === "untracked" && "U"}
-            {gitStatus === "modified" && "M"}
-            {gitStatus === "deleted" && "D"}
+            {subject === "untracked" && "U"}
+            {subject === "modified" && "M"}
+            {subject === "deleted" && "D"}
           </span>
         ) : null}
       </FilePrimitive>

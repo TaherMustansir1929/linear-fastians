@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/animate-ui/components/buttons/button";
-import { ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { ArrowBigUp, ArrowBigDown, ThumbsUp, ThumbsDown } from "lucide-react";
 import { client } from "@/lib/hono";
 import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -71,19 +71,20 @@ export function VoteButton({
   };
 
   return (
-    <div className="flex flex-row items-center gap-2 bg-muted/30 p-1 rounded-lg border">
+    <div className="flex flex-row items-center justify-end py-2 gap-2 p-1 rounded-b-lg border-b">
       <div className="flex items-center gap-1">
         <Button
           variant="ghost"
           size="sm"
           className={cn(
-            "h-8 w-8 p-0 hover:bg-emerald-100 hover:text-emerald-600 transition-colors",
+            "h-8 w-8 p-0 hover:bg-emerald-100 hover:text-emerald-600 transition-colors cursor-pointer",
             optimisticVote.type === 1 && "text-emerald-600 bg-emerald-100"
           )}
           onClick={() => handleVote(1)}
           disabled={mutation.isPending}
+          title="Upvote 👍"
         >
-          <ArrowBigUp
+          <ThumbsUp
             className={cn(
               "h-6 w-6",
               optimisticVote.type === 1 && "fill-current"
@@ -107,13 +108,14 @@ export function VoteButton({
           variant="ghost"
           size="sm"
           className={cn(
-            "h-8 w-8 p-0 hover:bg-rose-100 hover:text-rose-600 transition-colors",
+            "h-8 w-8 p-0 hover:bg-rose-100 hover:text-rose-600 transition-colors cursor-pointer",
             optimisticVote.type === -1 && "text-rose-600 bg-rose-100"
           )}
           onClick={() => handleVote(-1)}
           disabled={mutation.isPending}
+          title="Downvote 👎"
         >
-          <ArrowBigDown
+          <ThumbsDown
             className={cn(
               "h-6 w-6",
               optimisticVote.type === -1 && "fill-current"

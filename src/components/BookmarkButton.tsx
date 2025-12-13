@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/animate-ui/components/buttons/button";
-import { Bookmark } from "lucide-react";
 import { client } from "@/lib/hono";
-import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
+import { useMutation } from "@tanstack/react-query";
+import { Bookmark } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface BookmarkButtonProps {
   documentId: string;
@@ -61,15 +61,15 @@ export function BookmarkButton({
       variant="ghost"
       size="sm"
       className={cn(
-        "h-9 px-3 gap-2 border hover:bg-secondary/80",
+        "h-9 px-3 gap-2 border hover:bg-secondary/80 cursor-pointer",
         isBookmarked && "bg-secondary text-primary border-primary/20",
-        !isBookmarked && "text-muted-foreground"
+        !isBookmarked && "text-foreground"
       )}
       onClick={handleToggle}
       disabled={mutation.isPending}
+      title="Bookmark"
     >
       <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />
-      <span>{isBookmarked ? "Saved" : "Save"}</span>
     </Button>
   );
 }

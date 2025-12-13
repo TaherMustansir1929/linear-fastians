@@ -36,6 +36,7 @@ export default async function BookmarksPage() {
         documents={docs}
         title="Bookmarked Documents"
         isBookmarkView={true}
+        rootFolderName="Bookmarks"
       />
     </div>
   );

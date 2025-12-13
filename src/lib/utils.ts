@@ -14,3 +14,12 @@ export function rankingGrade(score: number): string {
   if (score >= 250) return "BRONZE";
   return "ROOKIE";
 }
+
+export function getRandomHexColor() {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}

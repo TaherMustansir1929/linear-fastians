@@ -86,11 +86,6 @@ import {
   FlipButtonFront,
 } from "@/components/animate-ui/components/buttons/flip";
 import { Document } from "@/types";
-import {
-  Spring,
-  SpringElement,
-  SpringProvider,
-} from "./animate-ui/primitives/animate/spring";
 import { Separator } from "./ui/separator";
 
 export function AppSidebar({
@@ -112,7 +107,7 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <div>
-                <FlipButton className="w-full">
+                <FlipButton className="w-full p-0">
                   <FlipButtonFront
                     className="w-full p-0 cursor-pointer"
                     variant={"ghost"}

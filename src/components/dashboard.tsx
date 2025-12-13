@@ -1,7 +1,10 @@
 "use client";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/animate-ui/components/radix/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { usePathname } from "next/navigation";
-import React from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,11 +14,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/animate-ui/components/radix/sidebar";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 import { Document } from "@/types";
 

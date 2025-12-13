@@ -1,23 +1,36 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+
 import { useDocumentDetails } from "@/hooks/useDocuments";
 
-import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
-import { PDFViewer } from "@/components/renderers/PDFViewer";
-import { HTMLViewer } from "@/components/renderers/HTMLViewer";
-import { TextViewer } from "@/components/renderers/TextViewer";
-import { Button } from "@/components/animate-ui/components/buttons/button";
-import { Download, Calendar, Tag, Eye, Loader2 } from "lucide-react";
-import { format } from "date-fns";
-import { TimeTracker } from "@/components/TimeTracker";
-import { VoteButton } from "@/components/VoteButton";
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSection } from "@/components/CommentSection";
+import { TimeTracker } from "@/components/TimeTracker";
 import { ViewTracker } from "@/components/ViewTracker";
+import { VoteButton } from "@/components/VoteButton";
+import { Button } from "@/components/animate-ui/components/buttons/button";
+import { HTMLViewer } from "@/components/renderers/HTMLViewer";
+import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
+import { PDFViewer } from "@/components/renderers/PDFViewer";
+import { TextViewer } from "@/components/renderers/TextViewer";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import {
+  Calendar,
+  Download,
+  Eye,
+  Fullscreen,
+  Loader2,
+  Tag,
+  X,
+} from "lucide-react";
 
 export default function DocumentPageContent({ id }: { id: string }) {
   const { data, isLoading, error } = useDocumentDetails(id);
+  const isMobile = useIsMobile();
 
   // Derived state
   const doc = data?.doc;
@@ -40,6 +53,34 @@ export default function DocumentPageContent({ id }: { id: string }) {
     enabled: !!shouldFetchContent && !!publicUrl,
   });
 
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  // Toggle function
+  const toggleFullScreen = () => setIsFullScreen((prev) => !prev);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "f" || e.key === "F") {
+        // Only toggle if not typing in an input/textarea
+        const target = e.target as HTMLElement;
+        if (
+          target.tagName !== "INPUT" &&
+          target.tagName !== "TEXTAREA" &&
+          !target.isContentEditable
+        ) {
+          e.preventDefault(); // Prevent default 'f' action if needed (though usually none)
+          toggleFullScreen();
+        }
+      } else if (e.key === "Escape") {
+        setIsFullScreen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -57,19 +98,24 @@ export default function DocumentPageContent({ id }: { id: string }) {
   }
 
   const renderContent = () => {
+    const viewerProps = isFullScreen
+      ? { className: "h-full w-full rounded-none border-0 shadow-none" }
+      : {};
+
     switch (doc.fileType) {
       case "pdf":
-        return <PDFViewer url={publicUrl} />;
+        return <PDFViewer url={publicUrl} {...viewerProps} />;
       case "md":
-        return <MarkdownViewer content={textContent || ""} />;
+        return <MarkdownViewer content={textContent || ""} {...viewerProps} />;
       case "html":
-        return <HTMLViewer url={publicUrl} />;
+        return <HTMLViewer url={publicUrl} {...viewerProps} />;
       case "txt":
       case "latex":
         return (
           <TextViewer
             content={textContent || ""}
             language={doc.fileType === "latex" ? "latex" : "text"}
+            {...viewerProps}
           />
         );
       default:
@@ -111,27 +157,38 @@ export default function DocumentPageContent({ id }: { id: string }) {
             </div>
           </div>
 
-          <div className="w-full md:w-fit flex flex-col sm:flex-row items-center gap-4 justify-between">
-            <VoteButton
-              documentId={id}
-              initialUpvotes={doc.upvoteCount}
-              initialDownvotes={doc.downvoteCount}
-              userVote={userVote as 1 | -1 | null}
-            />
-            <div className="flex items-center gap-4">
+          <div className="w-full md:w-fit flex flex-row items-center gap-3 justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                className="p-1 cursor-pointer"
+                onClick={toggleFullScreen}
+                title={
+                  isFullScreen ? "Exit Full Screen (Esc)" : "Full Screen (F)"
+                }
+              >
+                {isFullScreen ? (
+                  <X className="" />
+                ) : (
+                  <Fullscreen className="" />
+                )}
+              </Button>
               <BookmarkButton
                 documentId={id}
                 initialIsBookmarked={!!isBookmarked}
               />
-              <Button asChild>
+              <Button asChild size={isMobile ? "icon" : "default"}>
                 <a
                   href={publicUrl}
                   download
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
+                  title="Download"
                 >
-                  <Download className="h-4 w-4" /> Download
+                  <Download className="h-4 w-4" />
+                  {!isMobile && "Download"}
                 </a>
               </Button>
             </div>
@@ -139,8 +196,41 @@ export default function DocumentPageContent({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="bg-background border rounded-xl shadow-sm overflow-hidden min-h-[500px]">
-        {renderContent()}
+      <div
+        className={cn(
+          "transition-all duration-300 ease-in-out",
+          isFullScreen
+            ? "fixed inset-0 z-50 h-screen w-screen rounded-none border-0 overflow-auto"
+            : "border rounded-xl overflow-hidden min-h-[500px]"
+        )}
+      >
+        <div
+          className={cn(
+            "transition-all duration-300 ease-in-out",
+            isFullScreen
+              ? "fixed inset-0 z-50 h-screen w-screen rounded-none border-0 overflow-auto"
+              : "shadow-sm rounded-lg overflow-hidden min-h-[500px]"
+          )}
+        >
+          {isFullScreen && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleFullScreen}
+              className="absolute top-4 right-4 z-60 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-sm"
+            >
+              <X className="h-6 w-6" />
+              <span className="sr-only">Exit Full Screen</span>
+            </Button>
+          )}
+          {renderContent()}
+        </div>
+        <VoteButton
+          documentId={id}
+          initialUpvotes={doc.upvoteCount}
+          initialDownvotes={doc.downvoteCount}
+          userVote={userVote as 1 | -1 | null}
+        />
       </div>
 
       <div className="mt-12 border-t pt-8">

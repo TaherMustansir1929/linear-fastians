@@ -1,14 +1,26 @@
+import { cn } from "@/lib/utils";
+
 interface TextViewerProps {
-  content: string
-  language?: string
+  content: string;
+  language?: string;
+  className?: string;
 }
 
-export function TextViewer({ content, language = 'text' }: TextViewerProps) {
+export function TextViewer({
+  content,
+  language = "text",
+  className,
+}: TextViewerProps) {
   return (
-    <div className="w-full h-[80vh] overflow-auto bg-muted/50 p-4 rounded-lg border">
-      <pre className="font-mono text-sm whitespace-pre-wrap">
+    <div
+      className={cn(
+        "w-full h-[80vh] overflow-auto bg-accent p-4 rounded-lg border-b shadow-sm",
+        className
+      )}
+    >
+      <pre className="font-sans font-medium text-sm whitespace-pre-wrap">
         {content}
       </pre>
     </div>
-  )
+  );
 }
