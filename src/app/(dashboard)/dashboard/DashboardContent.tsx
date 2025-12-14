@@ -1,7 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
+import { useDashboard } from "@/hooks/useDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartBarLabelCustom } from "@/components/charts/bar-chart-cutom-label";
 import { ChartLineLinear } from "@/components/charts/line-chart-linear";
@@ -28,25 +27,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { rankingGrade } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+
+import ClientLoader from "@/components/ui/client-loader";
 
 export default function DashboardContent() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["dashboard"],
-    queryFn: async () => {
-      const res = await client.api.dashboard.$get();
-      if (!res.ok) throw new Error("Failed to fetch dashboard data");
-      return await res.json();
-    },
-  });
+  const { data, isLoading, error } = useDashboard();
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (isLoading) return <ClientLoader label="Loading dashboard..." />;
 
   if (error) {
     return (

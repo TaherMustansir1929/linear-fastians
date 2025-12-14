@@ -10,6 +10,7 @@ import { CommentSection } from "@/components/CommentSection";
 import { TimeTracker } from "@/components/TimeTracker";
 import { ViewTracker } from "@/components/ViewTracker";
 import { VoteButton } from "@/components/VoteButton";
+import { ShareDialog } from "@/components/ShareDialog";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import { HTMLViewer } from "@/components/renderers/HTMLViewer";
 import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
@@ -18,15 +19,9 @@ import { TextViewer } from "@/components/renderers/TextViewer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import {
-  Calendar,
-  Download,
-  Eye,
-  Fullscreen,
-  Loader2,
-  Tag,
-  X,
-} from "lucide-react";
+import { Calendar, Download, Eye, Fullscreen, Tag, X } from "lucide-react";
+
+import ClientLoader from "@/components/ui/client-loader";
 
 export default function DocumentPageContent({ id }: { id: string }) {
   const { data, isLoading, error } = useDocumentDetails(id);
@@ -84,7 +79,7 @@ export default function DocumentPageContent({ id }: { id: string }) {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="animate-spin h-8 w-8 text-muted-foreground" />
+        <ClientLoader label="Loading document..." />
       </div>
     );
   }
@@ -178,6 +173,7 @@ export default function DocumentPageContent({ id }: { id: string }) {
                 documentId={id}
                 initialIsBookmarked={!!isBookmarked}
               />
+              <ShareDialog documentId={id} />
               <Button asChild size={isMobile ? "icon" : "default"}>
                 <a
                   href={publicUrl}
@@ -188,7 +184,6 @@ export default function DocumentPageContent({ id }: { id: string }) {
                   title="Download"
                 >
                   <Download className="h-4 w-4" />
-                  {!isMobile && "Download"}
                 </a>
               </Button>
             </div>

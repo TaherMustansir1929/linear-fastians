@@ -14,7 +14,7 @@ export function TextViewer({
   return (
     <div
       className={cn(
-        "w-full h-[80vh] overflow-auto bg-accent p-4 rounded-lg border-b shadow-sm",
+        "w-full h-screen overflow-auto bg-accent p-4 rounded-lg border-b shadow-sm",
         className
       )}
     >

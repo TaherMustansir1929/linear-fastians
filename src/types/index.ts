@@ -14,6 +14,7 @@ export interface Document {
   viewCount: number;
   upvoteCount: number;
   downvoteCount: number;
+  uploader?: User | null;
 }
 
 export interface User {

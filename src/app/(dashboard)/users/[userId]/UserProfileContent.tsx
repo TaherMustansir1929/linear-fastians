@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
 import { useDocuments } from "@/hooks/useDocuments";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,9 +17,7 @@ import {
   FileCode,
   FileType as FileTypeIcon,
   Calendar,
-  Loader2,
 } from "lucide-react";
-import { User } from "@/types";
 
 const getIcon = (type: string) => {
   switch (type) {
@@ -42,24 +38,19 @@ const getIcon = (type: string) => {
   }
 };
 
+import { useUser } from "@/hooks/useUsers";
+
+import ClientLoader from "@/components/ui/client-loader";
+
 export default function UserProfileContent({ userId }: { userId: string }) {
-  const { data: user, isLoading: isUserLoading } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: async () => {
-      const res = await client.api.users[":id"].$get({ param: { id: userId } });
-      if (!res.ok) return null;
-      const data = await res.json();
-      if ("error" in data) return null;
-      return data as User;
-    },
-  });
+  const { data: user, isLoading: isUserLoading } = useUser(userId);
 
   const { data: documents, isLoading: isDocsLoading } = useDocuments(userId);
 
   if (isUserLoading || isDocsLoading) {
     return (
       <div className="flex h-[50vh] justify-center items-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <ClientLoader label="Loading profile..." />
       </div>
     );
   }

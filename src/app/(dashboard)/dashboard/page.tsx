@@ -1,12 +1,16 @@
 import DashboardContent from "./DashboardContent";
 import { auth } from "@clerk/nextjs/server";
+import { dashboardOptions } from "@/hooks/useDashboard";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import GlobalLoader from "@/components/ui/global-loader";
+import { Suspense } from "react";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
-
-  // ENV Variable Switch - we might want to pass this to the client component or let API handle it
-  // The API dashboard.ts already handles SHOW_DUMMY_METRICS env on server side.
-  // So we just need to render the client component.
 
   if (!userId) {
     const showDummy = process.env.SHOW_DUMMY_METRICS === "true";
@@ -15,5 +19,16 @@ export default async function DashboardPage() {
     }
   }
 
-  return <DashboardContent />;
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(dashboardOptions);
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<GlobalLoader />}>
+        <DashboardContent />
+        {/* <GlobalLoader /> */}
+      </Suspense>
+    </HydrationBoundary>
+  );
 }

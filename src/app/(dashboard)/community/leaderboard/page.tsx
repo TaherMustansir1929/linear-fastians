@@ -1,5 +1,5 @@
-import CommunityContent from "./CommunityContent";
-import { documentsOptions } from "@/hooks/useDocuments";
+import LeaderboardContent from "./LeaderboardContent";
+import { leaderboardOptions } from "@/hooks/useUsers";
 import {
   HydrationBoundary,
   QueryClient,
@@ -8,15 +8,15 @@ import {
 import GlobalLoader from "@/components/ui/global-loader";
 import { Suspense } from "react";
 
-export default async function CommunityPage() {
+export default async function LeaderboardPage() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(documentsOptions());
+  await queryClient.prefetchQuery(leaderboardOptions);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<GlobalLoader />}>
-        <CommunityContent />
+        <LeaderboardContent />
       </Suspense>
     </HydrationBoundary>
   );

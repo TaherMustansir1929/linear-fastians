@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Table,
@@ -11,29 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trophy, Loader2 } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { cn, rankingGrade } from "@/lib/utils";
-import { User } from "@/types";
+
+import { useLeaderboard } from "@/hooks/useUsers";
+
+import ClientLoader from "@/components/ui/client-loader";
 
 export default function LeaderboardContent() {
-  const {
-    data: topUsers,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["leaderboard"],
-    queryFn: async () => {
-      const res = await client.api.users.leaderboard.$get();
-      if (!res.ok) throw new Error("Failed to fetch leaderboard");
-      const data = await res.json();
-      return data as User[];
-    },
-  });
+  const { data: topUsers, isLoading, error } = useLeaderboard();
 
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <ClientLoader label="Loading leaderboard..." />
       </div>
     );
   }
@@ -49,8 +38,8 @@ export default function LeaderboardContent() {
   return (
     <div className="container mx-auto py-12 px-4 max-w-4xl">
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold bg-linear-to-r from-gray-400 to-gray-600 bg-clip-text text-transparent inline-flex items-center gap-3">
-          <Trophy className="h-10 w-10 text-gray-500" />
+        <h1 className="text-4xl font-bold bg-linear-to-r from-gray-700 to-gray-500 bg-clip-text text-transparent inline-flex items-center gap-3">
+          <Trophy className="h-10 w-10 text-gray-700" />
           Leaderboard
         </h1>
         <p className="text-muted-foreground mt-2">

@@ -11,7 +11,7 @@ export function HTMLViewer({ url, content, className }: HTMLViewerProps) {
   return (
     <div
       className={cn(
-        "w-full h-[80vh] bg-white rounded-lg overflow-hidden border-b shadow-sm",
+        "w-full h-screen bg-white rounded-lg overflow-hidden border-b shadow-sm",
         className
       )}
     >

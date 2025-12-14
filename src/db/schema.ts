@@ -41,6 +41,7 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`timezone('utc'::text, now())`)
     .notNull(),
+  publicShareToken: text("public_share_token").unique(),
 });
 
 // 3. Document Votes Table

@@ -9,7 +9,7 @@ export function PDFViewer({ url, className }: PDFViewerProps) {
   return (
     <div
       className={cn(
-        "w-full h-[80vh] bg-gray-100 rounded-lg overflow-hidden border",
+        "w-full h-screen bg-gray-100 rounded-lg overflow-hidden border",
         className
       )}
     >

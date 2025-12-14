@@ -68,11 +68,6 @@ const data = {
       icon: UsersRound,
     },
     {
-      name: "Leaderboard",
-      url: "/leaderboard",
-      icon: Trophy,
-    },
-    {
       name: "Upload",
       url: "/upload/batch",
       icon: Upload,

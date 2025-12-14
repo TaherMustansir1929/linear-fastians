@@ -27,6 +27,8 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
+import ClientLoader from "@/components/ui/client-loader";
+
 export function DocumentList() {
   const { data: documents, isLoading } = useDocuments();
   const [search, setSearch] = useState("");
@@ -36,7 +38,7 @@ export function DocumentList() {
   const [sortBy, setSortBy] = useState<"date" | "views" | "upvotes">("date");
 
   if (isLoading)
-    return <div className="text-center py-20">Loading documents...</div>;
+    return <ClientLoader label="Loading documents..." className="py-20" />;
 
   // Filter first
   const filtered =

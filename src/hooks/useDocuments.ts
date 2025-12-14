@@ -1,11 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  queryOptions,
+} from "@tanstack/react-query";
 
 import { Document, Comment, FileType } from "@/types";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
 
-export function useDocuments(userId?: string) {
-  return useQuery({
+export const documentsOptions = (userId?: string) =>
+  queryOptions({
     queryKey: ["documents", userId],
     queryFn: async () => {
       const res = await client.api.documents.$get({
@@ -13,17 +18,16 @@ export function useDocuments(userId?: string) {
       });
       if (!res.ok) throw new Error("Failed to fetch documents");
       const data = await res.json();
-      // API returns camelCase objects matching Document type (since we updated Document type)
-      // Drizzle might return dates as strings in JSON? Yes.
-      // Our Document type has createdAt: string. So this matches.
       return data as Document[];
     },
   });
+
+export function useDocuments(userId?: string) {
+  return useQuery(documentsOptions(userId));
 }
 
-// Deprecated or simple version
-export function useDocument(id: string) {
-  return useQuery({
+export const documentOptions = (id: string) =>
+  queryOptions({
     queryKey: ["document", id],
     queryFn: async () => {
       const res = await client.api.documents[":id"].$get({
@@ -34,10 +38,14 @@ export function useDocument(id: string) {
       return data.doc as Document;
     },
   });
+
+// Deprecated or simple version
+export function useDocument(id: string) {
+  return useQuery(documentOptions(id));
 }
 
-export function useDocumentDetails(id: string) {
-  return useQuery({
+export const documentDetailsOptions = (id: string) =>
+  queryOptions({
     queryKey: ["document-details", id],
     queryFn: async () => {
       const res = await client.api.documents[":id"].$get({
@@ -55,6 +63,9 @@ export function useDocumentDetails(id: string) {
       };
     },
   });
+
+export function useDocumentDetails(id: string) {
+  return useQuery(documentDetailsOptions(id));
 }
 
 import { Subject } from "@/types";
@@ -108,7 +119,7 @@ export const uploadFile = async ({
   else if (["html", "htm"].includes(fileExt)) fileType = "html";
   else if (["tex", "latex"].includes(fileExt)) fileType = "latex";
 
-  const userId = "temp"; // The backend determines exact path or we send only filename.
+  // const userId = "temp"; // The backend determines exact path or we send only filename.
   // Actually, backend needs path to generate signed URL.
   // Let's generate a path here.
   // Sanitize function for S3 keys

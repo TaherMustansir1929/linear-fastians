@@ -14,6 +14,8 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { SUBJECTS } from "@/types";
+import { nanoid } from "nanoid";
+import { headers } from "next/headers";
 
 const app = new Hono()
   .get("/", async (c) => {
@@ -25,6 +27,9 @@ const app = new Hono()
     const docs = await db.query.documents.findMany({
       where: filterUserId ? eq(documents.userId, filterUserId) : undefined,
       orderBy: [desc(documents.createdAt)],
+      with: {
+        uploader: true,
+      },
     });
 
     return c.json(docs);
@@ -558,6 +563,55 @@ const app = new Hono()
 
       return c.json({ success: true });
     }
-  );
+  )
+  .post("/:id/share", async (c) => {
+    const documentId = c.req.param("id");
+    const { userId } = await auth();
+
+    if (!userId) return c.json({ error: "Unauthorized" }, 401);
+
+    // 1. Check doc
+    const doc = await db.query.documents.findFirst({
+      where: eq(documents.id, documentId),
+    });
+
+    if (!doc) return c.json({ error: "Not found" }, 404);
+    if (doc.userId !== userId) return c.json({ error: "Forbidden" }, 403);
+
+    let token = doc.publicShareToken;
+
+    // 2. Generate token if missing
+    if (!token) {
+      token = nanoid(12);
+      await db
+        .update(documents)
+        .set({ publicShareToken: token })
+        .where(eq(documents.id, documentId));
+    }
+
+    // 3. URLs
+    const headersList = await headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const shareUrl = `${protocol}://${host}/share/${token}`;
+
+    return c.json({ shareUrl });
+  })
+  .get("/public/:token", async (c) => {
+    const token = c.req.param("token");
+
+    const doc = await db.query.documents.findFirst({
+      where: eq(documents.publicShareToken, token),
+      with: {
+        uploader: true,
+      },
+    });
+
+    if (!doc) return c.json({ error: "Not found" }, 404);
+
+    const signedUrl = await getFileUrl(doc.filePath);
+
+    return c.json({ doc, signedUrl });
+  });
 
 export default app;

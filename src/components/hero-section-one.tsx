@@ -1,32 +1,27 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+
 import { Button } from "@/components/animate-ui/components/buttons/button";
+import { cn } from "@/lib/utils";
 import { ChevronRight, CirclePlay } from "lucide-react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
+import Link from "next/link";
+import { StarsBackground } from "./animate-ui/components/backgrounds/stars";
 import TeamSection from "./team-section-one";
-import { Ribbons } from "./ribbons";
 
 export default function HeroSection() {
+  const { resolvedTheme } = useTheme();
   return (
     <>
       {/* <HeroHeader /> */}
       <main className="overflow-hidden">
-        <Ribbons
-          baseThickness={30}
-          colors={["#ffffff"]}
-          speedMultiplier={0.5}
-          maxAge={500}
-          enableFade={false}
-          enableShaderEffect={true}
-        />
-        <section className="bg-linear-to-b to-muted from-background overflow-hidden relative">
-          <Ribbons
-            baseThickness={30}
-            colors={["#ffffff"]}
-            speedMultiplier={0.5}
-            maxAge={500}
-            enableFade={false}
-            enableShaderEffect={true}
+        <section className="bg-linear-to-b to-muted from-background overflow-hidden relative border-b border-muted shadow-xl backdrop-blur-xl rounded-b-xl">
+          <StarsBackground
+            starColor={resolvedTheme === "dark" ? "#FFF" : "#000"}
+            className={cn(
+              "absolute inset-0 flex items-center justify-center rounded-xl",
+              "dark:bg-[radial-gradient(ellipse_at_bottom,#262626_0%,#000_100%)] bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]"
+            )}
           />
           <div className="relative py-24">
             <div className="relative z-10 mx-auto w-full max-w-5xl px-6">
@@ -62,7 +57,7 @@ export default function HeroSection() {
                   </div>
                 </div>
 
-                <div className="mt-10">
+                <div className="mt-10 h-16">
                   {/* <p className="text-muted-foreground">Trusted by teams at :</p>
                   <div className="mt-6 grid max-w-sm grid-cols-3 gap-6">
                     <div className="flex">
