@@ -24,6 +24,7 @@ export default async function BookmarksPage() {
     ...b.documents,
     fileType: b.documents.fileType as Document["fileType"],
     subject: b.documents.subject as Document["subject"],
+    category: b.documents.category as Document["category"],
     createdAt: b.documents.createdAt.toISOString(),
     viewCount: b.documents.viewCount || 0,
     upvoteCount: b.documents.upvoteCount || 0,
