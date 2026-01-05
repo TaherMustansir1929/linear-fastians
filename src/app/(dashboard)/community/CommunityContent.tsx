@@ -88,6 +88,8 @@ export default function CommunityContent() {
                           "border-gray-500 text-gray-500":
                             rankingGrade(stats.reputationScore || 0) ===
                             "ROOKIE",
+                          "border-gray-700 text-gray-700":
+                            rankingGrade(stats.reputationScore || 0) === "IRON",
                           "border-yellow-800 text-yellow-800":
                             rankingGrade(stats.reputationScore || 0) ===
                             "BRONZE",

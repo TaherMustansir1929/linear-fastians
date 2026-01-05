@@ -90,6 +90,8 @@ export default function LeaderboardContent() {
                           "bg-gray-500/50":
                             rankingGrade(user.reputationScore || 0) ===
                             "ROOKIE",
+                          "bg-gray-700/50":
+                            rankingGrade(user.reputationScore || 0) === "IRON",
                           "bg-yellow-800/50":
                             rankingGrade(user.reputationScore || 0) ===
                             "BRONZE",
