@@ -3,12 +3,17 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { currentUser } from "@clerk/nextjs/server";
+import { isEmailAllowed } from "@/lib/auth-config";
 
 const app = new Hono()
   .get("/me", async (c) => {
     const user = await currentUser();
     if (!user) {
       return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    if (!isEmailAllowed(user.emailAddresses[0].emailAddress)) {
+      return c.json({ error: "Invalid email id domain" }, 401);
     }
 
     // Upsert user
@@ -35,7 +40,7 @@ const app = new Hono()
   .get("/leaderboard", async (c) => {
     const topUsers = await db.query.users.findMany({
       orderBy: [desc(users.reputationScore)],
-      limit: 50,
+      limit: 10,
     });
     return c.json(topUsers);
   })
