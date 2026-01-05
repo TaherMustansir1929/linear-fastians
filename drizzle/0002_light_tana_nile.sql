@@ -1,0 +1,1 @@
+ALTER TABLE "documents" ADD COLUMN "category" text DEFAULT 'Notes' NOT NULL;

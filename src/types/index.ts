@@ -6,6 +6,7 @@ export interface Document {
   filePath: string;
   fileType: FileType;
   subject: Subject;
+  category: DocumentCategory;
   tags: string[] | null;
   userId: string;
   uploaderName?: string | null;
@@ -52,3 +53,16 @@ export const SUBJECTS = [
 ] as const;
 
 export type Subject = (typeof SUBJECTS)[number];
+
+export const DOCUMENT_CATEGORIES = [
+  "Notes",
+  "Past Papers",
+  "Assignments",
+  "Books",
+  "Formulas",
+  "Quizzes",
+  "Slides",
+  "Outlines",
+] as const;
+
+export type DocumentCategory = (typeof DOCUMENT_CATEGORIES)[number];

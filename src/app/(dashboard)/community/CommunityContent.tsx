@@ -48,7 +48,7 @@ export default function CommunityContent() {
       <div className="w-full flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Community Contributors</h1>
         <Button
-          className="flex items-center cursor-pointer bg-linear-to-r from-gray-700 to-gray-900"
+          className="flex items-center cursor-pointer bg-linear-to-r from-gray-900 to-gray-700"
           onClick={() => router.push("/community/leaderboard")}
         >
           <Trophy className="size-4" />

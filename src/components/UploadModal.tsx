@@ -20,21 +20,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUploadDocument } from "@/hooks/useDocuments";
-import { SUBJECTS, Subject } from "@/types";
+import {
+  SUBJECTS,
+  Subject,
+  DOCUMENT_CATEGORIES,
+  DocumentCategory,
+} from "@/types";
 import { useUser } from "@clerk/nextjs";
 import { Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function UploadModal() {
   const { user } = useUser();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const { mutate: uploadDocument, isPending } = useUploadDocument();
 
   // Form State
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState<Subject | "">("");
+  const [category, setCategory] = useState<DocumentCategory>("Notes");
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +64,7 @@ export function UploadModal() {
         file,
         title,
         subject,
+        category,
 
         userFullName: user.fullName || user.username || "Anonymous",
         userAvatar: user.imageUrl,
@@ -69,6 +74,7 @@ export function UploadModal() {
           setOpen(false);
           setTitle("");
           setSubject("");
+          setCategory("Notes");
           setFile(null);
         },
       }
@@ -126,6 +132,29 @@ export function UploadModal() {
                         className="cursor-pointer"
                       >
                         {sub}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  onValueChange={(val) => setCategory(val as DocumentCategory)}
+                  value={category}
+                  required
+                >
+                  <SelectTrigger className="cursor-pointer">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DOCUMENT_CATEGORIES.map((cat) => (
+                      <SelectItem
+                        key={cat}
+                        value={cat}
+                        className="cursor-pointer"
+                      >
+                        {cat}
                       </SelectItem>
                     ))}
                   </SelectContent>

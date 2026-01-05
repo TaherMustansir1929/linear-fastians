@@ -12,7 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SUBJECTS, Subject } from "@/types";
+import {
+  SUBJECTS,
+  Subject,
+  DOCUMENT_CATEGORIES,
+  DocumentCategory,
+} from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trash2, Upload } from "lucide-react";
 import { uploadFile } from "@/hooks/useDocuments";
@@ -25,6 +30,7 @@ interface BatchFile {
   file: File;
   title: string;
   subject: Subject | "";
+  category: DocumentCategory;
   status: "pending" | "uploading" | "completed" | "error";
 }
 
@@ -41,6 +47,7 @@ export default function BatchUploadContent() {
         file,
         title: file.name.split(".").slice(0, -1).join("."), // Auto title
         subject: "",
+        category: "Notes",
         status: "pending" as const,
       }));
       setFiles((prev) => [...prev, ...newFiles]);
@@ -53,7 +60,7 @@ export default function BatchUploadContent() {
 
   const updateFileMeta = (
     index: number,
-    field: "title" | "subject",
+    field: "title" | "subject" | "category",
     value: string
   ) => {
     setFiles((prev) =>
@@ -81,6 +88,7 @@ export default function BatchUploadContent() {
             file: batchFile.file,
             title: batchFile.title,
             subject: batchFile.subject as Subject,
+            category: batchFile.category,
 
             userFullName: user.fullName || user.username || "Anonymous",
             userAvatar: user.imageUrl,
@@ -152,6 +160,25 @@ export default function BatchUploadContent() {
                     }
                     disabled={isUploading}
                   />
+                </div>
+
+                <div className="w-full md:w-32">
+                  <Select
+                    value={file.category}
+                    onValueChange={(v) => updateFileMeta(index, "category", v)}
+                    disabled={isUploading}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DOCUMENT_CATEGORIES.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="w-full md:w-48">

@@ -5,16 +5,32 @@ import {
   queryOptions,
 } from "@tanstack/react-query";
 
-import { Document, Comment, FileType } from "@/types";
+import {
+  Document,
+  Comment,
+  FileType,
+  Subject,
+  DocumentCategory,
+} from "@/types";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
 
-export const documentsOptions = (userId?: string) =>
+export const documentsOptions = (
+  userId?: string,
+  subject?: string,
+  category?: string,
+  search?: string
+) =>
   queryOptions({
-    queryKey: ["documents", userId],
+    queryKey: ["documents", userId, subject, category, search],
     queryFn: async () => {
       const res = await client.api.documents.$get({
-        query: { userId: userId || "" },
+        query: {
+          userId: userId || "",
+          subject: subject || "",
+          category: category || "",
+          search: search || "",
+        },
       });
       if (!res.ok) throw new Error("Failed to fetch documents");
       const data = await res.json();
@@ -22,8 +38,13 @@ export const documentsOptions = (userId?: string) =>
     },
   });
 
-export function useDocuments(userId?: string) {
-  return useQuery(documentsOptions(userId));
+export function useDocuments(
+  userId?: string,
+  subject?: string,
+  category?: string,
+  search?: string
+) {
+  return useQuery(documentsOptions(userId, subject, category, search));
 }
 
 export const documentOptions = (id: string) =>
@@ -68,7 +89,7 @@ export function useDocumentDetails(id: string) {
   return useQuery(documentDetailsOptions(id));
 }
 
-import { Subject } from "@/types";
+// Removed duplicate Subject import
 
 interface UpdateVariables {
   id: string;
@@ -101,6 +122,7 @@ interface UploadVariables {
   file: File;
   title: string;
   subject: Subject;
+  category: DocumentCategory;
   userFullName?: string | null;
   userAvatar?: string | null;
 }
@@ -109,6 +131,7 @@ export const uploadFile = async ({
   file,
   title,
   subject,
+  category,
   userFullName,
   userAvatar,
 }: UploadVariables) => {
@@ -124,12 +147,13 @@ export const uploadFile = async ({
   // Let's generate a path here.
   // Sanitize function for S3 keys
   const sanitize = (str: string) => str.replace(/[^a-zA-Z0-9-_]/g, "_");
+  const cleanCategory = sanitize(category);
   const cleanSubject = sanitize(subject);
   const cleanUser = sanitize(userFullName || "Anonymous");
   const cleanFileName = sanitize(file.name.split(".").slice(0, -1).join(".")); // Name without extension
 
-  // Format: root/<subject>/<user>/<timestamp>_<filename>.<ext>
-  const filePath = `root/${cleanSubject}/${cleanUser}/${Date.now()}_${cleanFileName}.${fileExt}`;
+  // Format: root/<subject>/<category>/<user>/<timestamp>_<filename>.<ext>
+  const filePath = `root/${cleanSubject}/${cleanCategory}/${cleanUser}/${Date.now()}_${cleanFileName}.${fileExt}`;
 
   // 1. Get Presigned URL
   const urlRes = await client.api.documents["upload-url"].$post({
@@ -157,6 +181,7 @@ export const uploadFile = async ({
       filePath,
       fileType: fileType as string,
       subject,
+      category,
       uploaderName: userFullName || undefined,
       uploaderAvatar: userAvatar || undefined,
     },

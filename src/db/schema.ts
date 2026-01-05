@@ -30,6 +30,7 @@ export const documents = pgTable("documents", {
   filePath: text("file_path").notNull(),
   fileType: text("file_type").notNull(), // 'pdf', 'md', 'html', 'latex', 'txt'
   subject: text("subject").notNull(),
+  category: text("category").default("Notes").notNull(),
   tags: text("tags").array(),
   userId: text("user_id").notNull(), // stored from Clerk
   uploaderName: text("uploader_name"),

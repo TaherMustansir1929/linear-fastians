@@ -1,7 +1,9 @@
 export const TRUSTED_DOMAINS = ["nu.edu.pk"];
 
 export const ADMIN_EMAILS =
-  process.env.ADMIN_EMAILS?.split(",").map((email) => email.trim()) || [];
+  process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",").map((email) =>
+    email.trim()
+  ) || [];
 
 export function isEmailAllowed(email: string | null | undefined): boolean {
   if (!email) return false;

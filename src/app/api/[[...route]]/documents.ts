@@ -10,10 +10,10 @@ import {
 } from "@/db/schema";
 import { getUploadUrl, getFileUrl, deleteFile } from "@/lib/storage";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql, ilike, or } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { SUBJECTS } from "@/types";
+import { SUBJECTS, DOCUMENT_CATEGORIES } from "@/types";
 import { nanoid } from "nanoid";
 import { headers } from "next/headers";
 
@@ -23,9 +23,24 @@ const app = new Hono()
     // Default: fetch all recent or filter by user if query param?
     // Current useDocuments fetches *all* if userId not provided, or filtered.
     const filterUserId = c.req.query("userId");
+    const filterSubject = c.req.query("subject");
+    const filterCategory = c.req.query("category");
+    const search = c.req.query("search");
+
+    const whereClause = and(
+      filterUserId ? eq(documents.userId, filterUserId) : undefined,
+      filterSubject ? eq(documents.subject, filterSubject) : undefined,
+      filterCategory ? eq(documents.category, filterCategory) : undefined,
+      search
+        ? or(
+            ilike(documents.title, `%${search}%`),
+            ilike(documents.uploaderName, `%${search}%`)
+          )
+        : undefined
+    );
 
     const docs = await db.query.documents.findMany({
-      where: filterUserId ? eq(documents.userId, filterUserId) : undefined,
+      where: whereClause,
       orderBy: [desc(documents.createdAt)],
       with: {
         uploader: true,
@@ -43,6 +58,7 @@ const app = new Hono()
         filePath: z.string(),
         fileType: z.string(),
         subject: z.enum(SUBJECTS),
+        category: z.enum(DOCUMENT_CATEGORIES),
         uploaderName: z.string().optional(),
         uploaderAvatar: z.string().optional(),
       })
@@ -53,6 +69,7 @@ const app = new Hono()
         filePath,
         fileType,
         subject,
+        category,
         uploaderName,
         uploaderAvatar,
       } = c.req.valid("json");
@@ -85,6 +102,7 @@ const app = new Hono()
           filePath,
           fileType: fileType as any,
           subject,
+          category,
           userId: user.id,
           uploaderName: uploaderName || user.fullName,
           uploaderAvatar: uploaderAvatar || user.imageUrl,
