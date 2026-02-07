@@ -1,0 +1,2 @@
+CREATE TYPE "public"."verification_status" AS ENUM('unverified', 'processing', 'verified');--> statement-breakpoint
+ALTER TABLE "documents" ADD COLUMN "verification_status" "verification_status" DEFAULT 'unverified';

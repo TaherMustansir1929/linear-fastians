@@ -14,6 +14,13 @@ const HOVER_STYLES: Record<string, string> = {
   FE: "hover:bg-orange-500/10 hover:border-orange-500/30 hover:text-orange-600/90 dark:hover:text-orange-400/90",
   ICP: "hover:bg-pink-500/10 hover:border-pink-500/30 hover:text-pink-600/90 dark:hover:text-pink-400/90",
   IST: "hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-600/90 dark:hover:text-indigo-400/90",
+  OOPS: "hover:bg-yellow-500/10 hover:border-yellow-500/30 hover:text-yellow-600/90 dark:hover:text-yellow-400/90",
+  CCE: "hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-600/90 dark:hover:text-red-400/90",
+  EW: "hover:bg-cyan-500/10 hover:border-cyan-500/30 hover:text-cyan-600/90 dark:hover:text-cyan-400/90",
+  DLD: "hover:bg-lime-500/10 hover:border-lime-500/30 hover:text-lime-600/90 dark:hover:text-lime-400/90",
+  MVC: "hover:bg-fuchsia-500/10 hover:border-fuchsia-500/30 hover:text-fuchsia-600/90 dark:hover:text-fuchsia-400/90",
+  UOS: "hover:bg-teal-500/10 hover:border-teal-500/30 hover:text-teal-600/90 dark:hover:text-teal-400/90",
+  PST: "hover:bg-violet-500/10 hover:border-violet-500/30 hover:text-violet-600/90 dark:hover:text-violet-400/90",
   Other:
     "hover:bg-gray-500/10 hover:border-gray-500/30 hover:text-gray-600/90 dark:hover:text-gray-400/90",
 };

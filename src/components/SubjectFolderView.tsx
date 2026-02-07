@@ -26,10 +26,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { CheckCheck, CircleAlert, RefreshCcw, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { Badge } from "./ui/badge";
 
 interface SubjectFolderViewProps {
   documents: Document[];
@@ -50,16 +51,19 @@ export function SubjectFolderView({
 
   // Filter docs based on search query
   const filteredDocuments = documents.filter((doc) =>
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+    doc.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Group docs by subject
-  const docsBySubject = filteredDocuments.reduce((acc, doc) => {
-    const sub = doc.subject;
-    if (!acc[sub]) acc[sub] = [];
-    acc[sub].push(doc);
-    return acc;
-  }, {} as Record<Subject, Document[]>);
+  const docsBySubject = filteredDocuments.reduce(
+    (acc, doc) => {
+      const sub = doc.subject;
+      if (!acc[sub]) acc[sub] = [];
+      acc[sub].push(doc);
+      return acc;
+    },
+    {} as Record<Subject, Document[]>,
+  );
 
   const subjects = Object.keys(docsBySubject) as Subject[];
 
@@ -186,7 +190,29 @@ export function SubjectFolderView({
                                 )
                               }
                             >
-                              {doc.title}
+                              <div className="flex items-center justify-center gap-3">
+                                {doc.title}
+                                <Badge variant={"outline"}>
+                                  {doc.verificationStatus === "unverified" && (
+                                    <span className="text-yellow-600 flex items-center gap-1">
+                                      <CircleAlert className="size-4" />
+                                      Unverified
+                                    </span>
+                                  )}
+                                  {doc.verificationStatus === "verified" && (
+                                    <span className="text-green-600 flex items-center gap-1">
+                                      <CheckCheck className="size-4" />
+                                      Verified
+                                    </span>
+                                  )}
+                                  {doc.verificationStatus === "processing" && (
+                                    <span className="text-gray-600 flex items-center gap-1">
+                                      <RefreshCcw className="size-4" />
+                                      Processing
+                                    </span>
+                                  )}
+                                </Badge>
+                              </div>
                             </FileItem>
                           </div>
                         ))}

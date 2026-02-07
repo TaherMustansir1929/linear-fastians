@@ -7,10 +7,10 @@ import { useDocumentDetails } from "@/hooks/useDocuments";
 
 import { BookmarkButton } from "@/components/BookmarkButton";
 import { CommentSection } from "@/components/CommentSection";
+import { ShareDialog } from "@/components/ShareDialog";
 import { TimeTracker } from "@/components/TimeTracker";
 import { ViewTracker } from "@/components/ViewTracker";
 import { VoteButton } from "@/components/VoteButton";
-import { ShareDialog } from "@/components/ShareDialog";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import { HTMLViewer } from "@/components/renderers/HTMLViewer";
 import { MarkdownViewer } from "@/components/renderers/MarkdownViewer";
@@ -19,8 +19,19 @@ import { TextViewer } from "@/components/renderers/TextViewer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Calendar, Download, Eye, Fullscreen, Tag, X } from "lucide-react";
+import {
+  Calendar,
+  CheckCheck,
+  CircleAlert,
+  Download,
+  Eye,
+  RefreshCcw,
+  Scan,
+  Tag,
+  X,
+} from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import ClientLoader from "@/components/ui/client-loader";
 
 export default function DocumentPageContent({ id }: { id: string }) {
@@ -135,7 +146,29 @@ export default function DocumentPageContent({ id }: { id: string }) {
       <div className="mb-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-2">{doc.title}</h1>
+            <div className="flex justify-start items-center gap-4">
+              <h1 className="text-3xl font-bold mb-2">{doc.title}</h1>
+              <Badge variant={"outline"}>
+                {doc.verificationStatus === "unverified" && (
+                  <span className="text-yellow-600 flex items-center gap-1">
+                    <CircleAlert className="size-4" />
+                    Unverified
+                  </span>
+                )}
+                {doc.verificationStatus === "verified" && (
+                  <span className="text-green-600 flex items-center gap-1">
+                    <CheckCheck className="size-4" />
+                    Verified
+                  </span>
+                )}
+                {doc.verificationStatus === "processing" && (
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <RefreshCcw className="size-4" />
+                    Processing
+                  </span>
+                )}
+              </Badge>
+            </div>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Tag className="h-4 w-4" />
@@ -163,11 +196,7 @@ export default function DocumentPageContent({ id }: { id: string }) {
                   isFullScreen ? "Exit Full Screen (Esc)" : "Full Screen (F)"
                 }
               >
-                {isFullScreen ? (
-                  <X className="" />
-                ) : (
-                  <Fullscreen className="" />
-                )}
+                {isFullScreen ? <X className="" /> : <Scan className="" />}
               </Button>
               <BookmarkButton
                 documentId={id}
@@ -196,7 +225,7 @@ export default function DocumentPageContent({ id }: { id: string }) {
           "transition-all duration-300 ease-in-out",
           isFullScreen
             ? "fixed inset-0 z-50 h-screen w-screen rounded-none border-0 overflow-auto"
-            : "border rounded-xl overflow-hidden min-h-[500px]"
+            : "border rounded-xl overflow-hidden min-h-[500px]",
         )}
       >
         <div
@@ -204,7 +233,7 @@ export default function DocumentPageContent({ id }: { id: string }) {
             "transition-all duration-300 ease-in-out",
             isFullScreen
               ? "fixed inset-0 z-50 h-screen w-screen rounded-none border-0 overflow-auto"
-              : "shadow-sm rounded-lg overflow-hidden min-h-[500px]"
+              : "shadow-sm rounded-lg overflow-hidden min-h-[500px]",
           )}
         >
           {isFullScreen && (

@@ -6,6 +6,7 @@ import {
   timestamp,
   unique,
   check,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -22,6 +23,12 @@ export const users = pgTable("users", {
   totalDownvotes: integer("total_downvotes").default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
+
+export const VerificationStatusEnum = pgEnum("verification_status", [
+  "unverified",
+  "processing",
+  "verified",
+]);
 
 // 2. Documents Table
 export const documents = pgTable("documents", {
@@ -43,6 +50,9 @@ export const documents = pgTable("documents", {
     .default(sql`timezone('utc'::text, now())`)
     .notNull(),
   publicShareToken: text("public_share_token").unique(),
+  verificationStatus: VerificationStatusEnum("verification_status").default(
+    "unverified",
+  ),
 });
 
 // 3. Document Votes Table
@@ -62,7 +72,7 @@ export const documentVotes = pgTable(
   (t) => ({
     uniqueVote: unique().on(t.userId, t.documentId),
     voteTypeCheck: check("vote_type_check", sql`${t.voteType} IN (1, -1)`),
-  })
+  }),
 );
 
 // 4. Comments Table
@@ -97,7 +107,7 @@ export const commentVotes = pgTable(
   (t) => ({
     uniqueCommentVote: unique().on(t.userId, t.commentId),
     voteTypeCheck: check("vote_type_check", sql`${t.voteType} IN (1, -1)`),
-  })
+  }),
 );
 
 // 6. Bookmarks Table
@@ -115,7 +125,7 @@ export const bookmarks = pgTable(
   },
   (t) => ({
     uniqueBookmark: unique().on(t.userId, t.documentId),
-  })
+  }),
 );
 
 // 7. Document Access Logs Table
@@ -132,7 +142,7 @@ export const documentAccessLogs = pgTable(
   },
   (t) => ({
     uniqueAccessLog: unique().on(t.userId, t.documentId),
-  })
+  }),
 );
 
 // --- Relations ---
@@ -176,5 +186,5 @@ export const documentAccessLogsRelations = relations(
       fields: [documentAccessLogs.userId],
       references: [users.id],
     }),
-  })
+  }),
 );

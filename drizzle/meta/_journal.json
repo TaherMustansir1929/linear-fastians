@@ -22,6 +22,13 @@
       "when": 1767606010110,
       "tag": "0002_light_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770474162894,
+      "tag": "0003_chemical_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

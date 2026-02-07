@@ -20,7 +20,7 @@ export default function HeroSection() {
             starColor={resolvedTheme === "dark" ? "#FFF" : "#000"}
             className={cn(
               "absolute inset-0 flex items-center justify-center rounded-xl",
-              "dark:bg-[radial-gradient(ellipse_at_bottom,#262626_0%,#000_100%)] bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]"
+              "dark:bg-[radial-gradient(ellipse_at_bottom,#262626_0%,#000_100%)] bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]",
             )}
           />
           <div className="relative py-24">
@@ -49,7 +49,7 @@ export default function HeroSection() {
                       variant="outline"
                       className="pl-5"
                     >
-                      <Link href="#link">
+                      <Link href="https://httpmemes.com/404.jpg">
                         <CirclePlay className="fill-primary/25 stroke-primary" />
                         <span className="text-nowrap">Watch video</span>
                       </Link>

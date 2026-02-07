@@ -16,6 +16,7 @@ export interface Document {
   upvoteCount: number;
   downvoteCount: number;
   uploader?: User | null;
+  verificationStatus: "unverified" | "processing" | "verified";
 }
 
 export interface User {
@@ -49,6 +50,13 @@ export const SUBJECTS = [
   "FE",
   "ICP",
   "IST",
+  "OOPS",
+  "CCE",
+  "EW",
+  "DLD",
+  "MVC",
+  "UOS",
+  "PST",
   "Other",
 ] as const;
 

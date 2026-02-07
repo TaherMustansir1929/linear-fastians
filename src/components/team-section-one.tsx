@@ -7,8 +7,8 @@ import { socialLinks } from "@/constants/data";
 const members = [
   {
     src: "https://avatars.githubusercontent.com/u/138671354?v=4",
-    name: "Taher Mustansir",
-    role: "Fullstack Developer",
+    name: "Zeo XD",
+    role: "Founder",
     link: socialLinks.github,
   },
   {

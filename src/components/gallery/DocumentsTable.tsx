@@ -32,7 +32,7 @@ export function DocumentsTable() {
     undefined, // userId (all)
     subject || undefined,
     category || undefined,
-    search || undefined
+    search || undefined,
   );
 
   return (
@@ -67,7 +67,8 @@ export function DocumentsTable() {
                 <TableHead>Uploader</TableHead>
                 <TableHead>Likes</TableHead>
                 <TableHead>Views</TableHead>
-                <TableHead className="text-right">Date</TableHead>
+                <TableHead className="">Date</TableHead>
+                <TableHead className="">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,10 +116,21 @@ export function DocumentsTable() {
                       <span className="text-xs">{doc.viewCount || 0}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
+                  <TableCell className="text-muted-foreground">
                     {formatDistanceToNow(new Date(doc.createdAt), {
                       addSuffix: true,
                     })}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    <Badge variant={"outline"}>
+                      {doc.verificationStatus === "verified" ? (
+                        <span className="text-green-600">Verified</span>
+                      ) : doc.verificationStatus === "processing" ? (
+                        <span className="text-gray-600">Processing</span>
+                      ) : (
+                        <span className="text-yellow-600">Unverified</span>
+                      )}
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}
