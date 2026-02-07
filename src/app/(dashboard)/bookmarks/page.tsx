@@ -29,6 +29,7 @@ export default async function BookmarksPage() {
     viewCount: b.documents.viewCount || 0,
     upvoteCount: b.documents.upvoteCount || 0,
     downvoteCount: b.documents.downvoteCount || 0,
+    verificationStatus: b.documents.verificationStatus ?? "unverified",
   }));
 
   return (

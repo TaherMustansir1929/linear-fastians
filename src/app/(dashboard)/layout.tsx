@@ -30,6 +30,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
       viewCount: doc.viewCount || 0,
       upvoteCount: doc.upvoteCount || 0,
       downvoteCount: doc.downvoteCount || 0,
+      verificationStatus: doc.verificationStatus ?? "unverified",
     }));
 
     // Fetch Bookmarks
@@ -58,6 +59,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
         viewCount: b.documents.viewCount || 0,
         upvoteCount: b.documents.upvoteCount || 0,
         downvoteCount: b.documents.downvoteCount || 0,
+        verificationStatus: b.documents.verificationStatus ?? "unverified",
       } as Document;
     });
   }
